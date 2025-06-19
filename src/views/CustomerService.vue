@@ -26,7 +26,7 @@
       <div class="chat-main">
         <div class="service-header">
           <div class="service-info">
-            <ComputerDesktopIcon class="avatar" />
+            <img :src="starbucksIcon" class="avatar" style="width:48px;height:48px;object-fit:contain;background:none;border-radius:12px;" />
             <div class="info">
               <h3>小星</h3>
               <p>Starbucks程序员智能客服</p>
@@ -86,6 +86,7 @@ import {
 } from '@heroicons/vue/24/outline'
 import ChatMessage from '../components/ChatMessage.vue'
 import { chatAPI } from '../services/api'
+import starbucksIcon from '../assets/starbucks-icon.svg'
 
 const isDark = useDark()
 const messagesRef = ref(null)
@@ -313,19 +314,21 @@ onMounted(() => {
         gap: 0.5rem;
         padding: 0.5rem 1rem;
         border-radius: 0.5rem;
-        background: #333;
-        color: white;
+        background: #00C853;
+        color: #fff;
         border: none;
         cursor: pointer;
-        transition: background-color 0.3s;
+        transition: background 0.3s;
+        font-weight: 500;
+        font-size: 1rem;
         
         &:hover {
-          background: #000;
+          background: #388E3C;
         }
-        
         .icon {
           width: 1.25rem;
           height: 1.25rem;
+          color: #fff;
         }
       }
     }
@@ -453,8 +456,8 @@ onMounted(() => {
       }
       
       .send-button {
-        background: #333;
-        color: white;
+        background: #00C853;
+        color: #fff;
         border: none;
         border-radius: 0.5rem;
         width: 2.5rem;
@@ -463,20 +466,19 @@ onMounted(() => {
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        transition: background-color 0.3s;
+        transition: background 0.3s;
         
         &:hover:not(:disabled) {
-          background: #000;
+          background: #388E3C;
         }
-        
         &:disabled {
           background: #ccc;
           cursor: not-allowed;
         }
-        
         .icon {
           width: 1.25rem;
           height: 1.25rem;
+          color: #fff;
         }
       }
     }
@@ -536,6 +538,16 @@ onMounted(() => {
   .sidebar {
     background: rgba(40, 40, 40, 0.95);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    .new-chat {
+      background: #00C853;
+      color: #fff;
+      &:hover {
+        background: #388E3C;
+      }
+      .icon {
+        color: #fff;
+      }
+    }
   }
   
   .chat-main {

@@ -446,19 +446,21 @@ onMounted(() => {
         gap: 0.5rem;
         padding: 0.5rem 1rem;
         border-radius: 0.5rem;
-        background: #007CF0;
-        color: white;
+        background: #00C853;
+        color: #fff;
         border: none;
         cursor: pointer;
-        transition: background-color 0.3s;
+        transition: background 0.3s;
+        font-weight: 500;
+        font-size: 1rem;
         
         &:hover {
-          background: #0066cc;
+          background: #388E3C;
         }
-        
         .icon {
           width: 1.25rem;
           height: 1.25rem;
+          color: #fff;
         }
       }
     }
@@ -622,23 +624,22 @@ onMounted(() => {
             justify-content: center;
             border: none;
             border-radius: 0.75rem;
-            background: rgba(0, 124, 240, 0.1);
-            color: #007CF0;
+            background: #00C853;
+            color: #fff;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: background 0.3s;
             
             &:hover:not(:disabled) {
-              background: rgba(0, 124, 240, 0.2);
+              background: #388E3C;
             }
-            
             &:disabled {
               opacity: 0.5;
               cursor: not-allowed;
             }
-            
             .icon {
               width: 1.25rem;
               height: 1.25rem;
+              color: #fff;
             }
           }
         }
@@ -665,31 +666,29 @@ onMounted(() => {
         }
         
         .send-button {
+          background: #00C853;
+          color: #fff;
+          border: none;
+          border-radius: 0.5rem;
           width: 2.5rem;
           height: 2.5rem;
           display: flex;
           align-items: center;
           justify-content: center;
-          border: none;
-          border-radius: 0.75rem;
-          background: #007CF0;
-          color: white;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: background 0.3s;
           
           &:hover:not(:disabled) {
-            background: #0066cc;
-            transform: translateY(-1px);
+            background: #388E3C;
           }
-          
           &:disabled {
             background: #ccc;
             cursor: not-allowed;
           }
-          
           .icon {
             width: 1.25rem;
             height: 1.25rem;
+            color: #fff;
           }
         }
       }
@@ -701,6 +700,16 @@ onMounted(() => {
   .sidebar {
     background: rgba(40, 40, 40, 0.95);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    .new-chat {
+      background: #00C853;
+      color: #fff;
+      &:hover {
+        background: #388E3C;
+      }
+      .icon {
+        color: #fff;
+      }
+    }
   }
   
   .chat-main {
@@ -726,7 +735,7 @@ onMounted(() => {
           
           .file-info {
             .icon {
-              color: #007CF0;
+              color: #00C853;
             }
             
             .file-name {
@@ -765,11 +774,13 @@ onMounted(() => {
         }
 
         .file-upload .upload-btn {
-          background: rgba(0, 124, 240, 0.2);
-          color: #007CF0;
-          
+          background: #00C853;
+          color: #fff;
           &:hover:not(:disabled) {
-            background: rgba(0, 124, 240, 0.3);
+            background: #388E3C;
+          }
+          .icon {
+            color: #fff;
           }
         }
       }
@@ -797,11 +808,12 @@ onMounted(() => {
   .input-area {
     .file-upload {
       .upload-btn {
-        background: rgba(255, 255, 255, 0.1);
-        color: #999;
-        
+        background: #00C853;
+        color: #fff;
         &:hover:not(:disabled) {
-          background: rgba(255, 255, 255, 0.2);
+          background: #388E3C;
+        }
+        .icon {
           color: #fff;
         }
       }

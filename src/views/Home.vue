@@ -82,7 +82,7 @@ const aiApps = ref([
     text-align: center;
     font-size: 2.5rem;
     margin-bottom: 3rem;
-    background: linear-gradient(45deg, #007CF0, #00DFD8);
+    background: linear-gradient(90deg, #1c5e1f, #B2FF59);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: fadeIn 1s ease-out;
@@ -143,7 +143,7 @@ const aiApps = ref([
       width: 48px;
       height: 48px;
       margin-bottom: 1rem;
-      color: #007CF0;
+      color: #00C853;
 
       &.heart-icon {
         color: #ff4d4f;

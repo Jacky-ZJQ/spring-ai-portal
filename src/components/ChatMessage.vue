@@ -2,7 +2,7 @@
   <div class="message" :class="{ 'message-user': isUser }">
     <div class="avatar">
       <UserCircleIcon v-if="isUser" class="icon" />
-      <ComputerDesktopIcon v-else class="icon" :class="{ 'assistant': !isUser }" />
+      <img v-else :src="starbucksIcon" class="icon assistant" style="width:40px;height:40px;object-fit:contain;background:none;border-radius:8px;" />
     </div>
     <div class="content">
       <div class="text-container">
@@ -29,9 +29,10 @@
 import { computed, onMounted, nextTick, ref, watch } from 'vue'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
-import { UserCircleIcon, ComputerDesktopIcon, DocumentDuplicateIcon, CheckIcon } from '@heroicons/vue/24/outline'
+import { UserCircleIcon, DocumentDuplicateIcon, CheckIcon } from '@heroicons/vue/24/outline'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/github-dark.css'
+import starbucksIcon from '../assets/starbucks-icon.svg'
 
 const contentRef = ref(null)
 const copied = ref(false)

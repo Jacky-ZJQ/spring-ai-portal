@@ -92,10 +92,10 @@ body {
     font-size: 1.5rem;
     font-weight: bold;
     text-decoration: none;
-    color: inherit;
-    background: linear-gradient(45deg, #007CF0, #00DFD8);
+    background: linear-gradient(90deg, #19e76f, #398e3d);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    color: unset;
   }
 
   .theme-toggle {
