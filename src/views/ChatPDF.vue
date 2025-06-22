@@ -624,13 +624,13 @@ onUnmounted(() => {
       .logo {
         width: 2rem;
         height: 2rem;
-        color: #9333ea;
+        color: #00C853;
       }
 
       .title {
         font-size: 1.5rem;
         font-weight: bold;
-        background: linear-gradient(120deg, #9333ea 0%, #c026d3 100%);
+        background: linear-gradient(90deg, #1c5e1f, #B2FF59);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
       }
@@ -661,14 +661,14 @@ onUnmounted(() => {
           padding: 0.5rem 0.75rem;
           border: none;
           border-radius: 0.5rem;
-          background: #9333ea;
+          background: #00C853;
           color: white;
           font-size: 0.875rem;
           cursor: pointer;
           transition: all 0.2s;
 
           &:hover {
-            background: #7e22ce;
+            background: #388E3C;
           }
 
           .icon {
@@ -691,14 +691,14 @@ onUnmounted(() => {
         }
         
         &.active {
-          background: rgba(147, 51, 234, 0.1);
+          background: rgba(0, 200, 83, 0.15);
           
           .icon {
-            color: #9333ea;
+            color: #00C853;
           }
           
           .title {
-            color: #9333ea;
+            color: #00C853;
           }
         }
         
@@ -851,10 +851,10 @@ onUnmounted(() => {
         }
 
         .new-chat-btn {
-          background: rgba(147, 51, 234, 0.8);
+          background: rgba(0, 200, 83, 0.8);
 
           &:hover {
-            background: #9333ea;
+            background: #00C853;
           }
         }
       }
@@ -865,7 +865,7 @@ onUnmounted(() => {
         }
 
         &.active {
-          background: rgba(147, 51, 234, 0.15);
+          background: rgba(0, 200, 83, 0.15);
         }
 
         .icon {
@@ -942,8 +942,8 @@ onUnmounted(() => {
     text-align: center;
 
     .highlight {
-      color: #9333ea;
-      background: linear-gradient(120deg, #9333ea 0%, #c026d3 100%);
+      color: #00C853;
+      background: linear-gradient(90deg, #1c5e1f, #B2FF59);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -963,8 +963,8 @@ onUnmounted(() => {
     backdrop-filter: blur(10px);
 
     &.dragging {
-      border-color: #9333ea;
-      background: rgba(147, 51, 234, 0.05);
+      border-color: #00C853;
+      background: rgba(0, 200, 83, 0.05);
     }
 
     &.uploading {
@@ -1018,7 +1018,7 @@ onUnmounted(() => {
       .upload-icon {
         width: 4rem;
         height: 4rem;
-        color: #9333ea;
+        color: #00C853;
       }
 
       .upload-text {
@@ -1031,7 +1031,7 @@ onUnmounted(() => {
       }
 
       .upload-button {
-        background: #9333ea;
+        background: #00C853;
         color: white;
         border: none;
         padding: 0.75rem 2rem;
@@ -1044,11 +1044,11 @@ onUnmounted(() => {
         transition: all 0.3s ease;
 
         &:hover {
-          background: #7e22ce;
+          background: #388E3C;
         }
 
         &.uploading {
-          background: #9333ea80;
+          background: #388E3C80;
           cursor: not-allowed;
         }
 
@@ -1068,8 +1068,8 @@ onUnmounted(() => {
       background: rgba(40, 40, 40, 0.5);
 
       &.dragging {
-        border-color: #9333ea;
-        background: rgba(147, 51, 234, 0.1);
+        border-color: #00C853;
+        background: rgba(0, 200, 83, 0.1);
       }
 
       &.uploading {
