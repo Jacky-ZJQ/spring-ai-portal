@@ -10,7 +10,7 @@
           class="card"
         >
           <div class="card-content">
-            <component :is="app.icon" class="icon" />
+            <component :is="app.icon" :class="['icon', app.iconClass]" />
             <h2>{{ app.title }}</h2>
             <p>{{ app.description }}</p>
           </div>
@@ -27,7 +27,9 @@ import {
   ChatBubbleLeftRightIcon,
   HeartIcon,
   UserGroupIcon,
-  DocumentTextIcon
+  DocumentTextIcon,
+  CommandLineIcon,
+  WrenchScrewdriverIcon
 } from '@heroicons/vue/24/outline'
 
 const isDark = useDark()
@@ -36,14 +38,14 @@ const aiApps = ref([
   {
     id: 1,
     title: 'AI 聊天',
-    description: '多模态对话机器人，支持图片、音频等',
+    description: '【多模态】对话机器人，支持图片、音频等',
     route: '/ai-chat',
     icon: ChatBubbleLeftRightIcon
   },
   {
     id: 2,
     title: '哄哄模拟器',
-    description: '一个帮助你练习哄女朋友开心的小游戏',
+    description: '【Prompt】一个帮助你练习哄老婆开心的小游戏',
     route: '/game',
     icon: HeartIcon,
     iconClass: 'heart-icon'
@@ -51,16 +53,32 @@ const aiApps = ref([
   {
     id: 3,
     title: 'Starbucks智能客服',
-    description: '24小时在线的智能课程咨询师',
+    description: '【Function Calling】24小时在线的智能课程咨询师',
     route: '/customer-service',
     icon: UserGroupIcon
   },
   {
     id: 4,
     title: 'ChatPDF',
-    description: '打造你的个人知识库，与知识库自由对话',
+    description: '【RAG】打造你的个人知识库，与知识库自由对话',
     route: '/chat-pdf',
     icon: DocumentTextIcon
+  },
+  {
+    id: 5,
+    title: 'MCP网关 todo',
+    description: '【MCP】解决各类业务接口(http/rpc)便捷转换为MCP协议接口而设计实现',
+    route: '/chat-pdf',
+    icon: CommandLineIcon,
+    iconClass: 'mcp-icon'
+  },
+  {
+    id: 6,
+      title: 'SKILLS todo',
+      description: '【SKILLS】',
+      route: '/chat-pdf',
+      icon: WrenchScrewdriverIcon,
+      iconClass: 'skills-icon'
   }
 ])
 </script>
@@ -149,6 +167,14 @@ const aiApps = ref([
         color: #ff4d4f;
         animation: pulse 1.5s ease-in-out infinite;
       }
+
+      &.mcp-icon {
+        color: #0ea5e9;
+      }
+
+      &.skills-icon {
+        color: #f59e0b;
+      }
     }
 
     h2 {
@@ -219,4 +245,4 @@ const aiApps = ref([
     }
   }
 }
-</style> 
+</style>
