@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import GameChat from '../views/GameChat.vue'
 
 const routes = [
   {
@@ -31,6 +30,16 @@ const routes = [
     path: '/game',
     name: 'game',
     component: () => import('../views/GameChat.vue')
+  },
+  {
+    path: '/mcp-gateway',
+    name: 'McpGateway',
+    component: () => import('../views/McpGateway.vue')
+  },
+  {
+    path: '/skills',
+    name: 'SkillsCenter',
+    component: () => import('../views/SkillsCenter.vue')
   }
 ]
 

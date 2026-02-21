@@ -66,17 +66,17 @@ const aiApps = ref([
   },
   {
     id: 5,
-    title: 'MCP网关 todo',
-    description: '【MCP】解决各类业务接口(http/rpc)便捷转换为MCP协议接口而设计实现',
-    route: '/chat-pdf',
+    title: 'MCP网关',
+    description: '【MCP】解决各类业务接口(http/rpc)便捷转换为MCP协议接口',
+    route: '/mcp-gateway',
     icon: CommandLineIcon,
     iconClass: 'mcp-icon'
   },
   {
     id: 6,
-      title: 'SKILLS todo',
-      description: '【SKILLS】',
-      route: '/chat-pdf',
+      title: 'Skills中心',
+      description: '【SKILLS】按技能配置切换不同 AI 助手能力',
+      route: '/skills',
       icon: WrenchScrewdriverIcon,
       iconClass: 'skills-icon'
   }
