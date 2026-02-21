@@ -60,16 +60,22 @@ npm run preview
 
 ## 后端依赖说明
 
-当前前端代码中，后端地址使用硬编码：
+前端通过环境变量读取后端地址：
 
-- `http://localhost:8080`
+- `VITE_API_BASE_URL`
+- 默认值：`/api`（推荐配合 Nginx 反向代理）
 
-涉及文件：
+示例：
 
-- `src/services/api.js`
-- `src/views/ChatPDF.vue`
+```bash
+# 本地开发直连后端
+VITE_API_BASE_URL=http://localhost:8080 npm run dev
+```
 
-如果后端地址变化，请同步修改以上文件中的 `BASE_URL`。
+```bash
+# 生产构建（默认 /api，可省略）
+VITE_API_BASE_URL=/api npm run build
+```
 
 ## 主要页面路由
 

@@ -1,18 +1,28 @@
-const BASE_URL = 'http://localhost:8080'
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/+$/, '')
+
+const buildApiPath = (path) => {
+  const normalized = path.startsWith('/') ? path : `/${path}`
+  return `${API_BASE_URL}${normalized}`
+}
+
+const buildApiUrl = (path, query = {}) => {
+  const url = new URL(buildApiPath(path), window.location.origin)
+  Object.entries(query).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      url.searchParams.append(key, value)
+    }
+  })
+  return url.toString()
+}
 
 export const chatAPI = {
   // 发送聊天消息
   async sendMessage(data, chatId) {
     try {
-      const url = new URL(`${BASE_URL}/ai/chat`)
-      if (chatId) {
-        url.searchParams.append('chatId', chatId)
-      }
-      
+      const url = buildApiUrl('/ai/chat', { chatId })
       const response = await fetch(url, {
         method: 'POST',
-        body: data instanceof FormData ? data : 
-          new URLSearchParams({ prompt: data })
+        body: data instanceof FormData ? data : new URLSearchParams({ prompt: data })
       })
 
       if (!response.ok) {
@@ -27,19 +37,18 @@ export const chatAPI = {
   },
 
   // 获取聊天历史列表
-  async getChatHistory(type = 'chat') {  // 添加类型参数
+  async getChatHistory(type = 'chat') {
     try {
-      const response = await fetch(`${BASE_URL}/ai/history/${type}`)
+      const response = await fetch(buildApiPath(`/ai/history/${type}`))
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
       const chatIds = await response.json()
-      // 转换为前端需要的格式
       return chatIds.map(id => ({
         id,
-        title: type === 'pdf' ? `PDF对话 ${id.slice(-6)}` : 
-               type === 'service' ? `咨询 ${id.slice(-6)}` :
-               `对话 ${id.slice(-6)}`
+        title: type === 'pdf' ? `PDF对话 ${id.slice(-6)}` :
+          type === 'service' ? `咨询 ${id.slice(-6)}` :
+            `对话 ${id.slice(-6)}`
       }))
     } catch (error) {
       console.error('API Error:', error)
@@ -48,17 +57,16 @@ export const chatAPI = {
   },
 
   // 获取特定对话的消息历史
-  async getChatMessages(chatId, type = 'chat') {  // 添加类型参数
+  async getChatMessages(chatId, type = 'chat') {
     try {
-      const response = await fetch(`${BASE_URL}/ai/history/${type}/${chatId}`)
+      const response = await fetch(buildApiPath(`/ai/history/${type}/${chatId}`))
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
       const messages = await response.json()
-      // 添加时间戳
       return messages.map(msg => ({
         ...msg,
-        timestamp: new Date() // 由于后端没有提供时间戳，这里临时使用当前时间
+        timestamp: new Date()
       }))
     } catch (error) {
       console.error('API Error:', error)
@@ -69,8 +77,8 @@ export const chatAPI = {
   // 发送游戏消息
   async sendGameMessage(prompt, chatId) {
     try {
-      const response = await fetch(`${BASE_URL}/ai/game?prompt=${encodeURIComponent(prompt)}&chatId=${chatId}`, {
-        method: 'GET',
+      const response = await fetch(buildApiUrl('/ai/game', { prompt, chatId }), {
+        method: 'GET'
       })
 
       if (!response.ok) {
@@ -87,8 +95,8 @@ export const chatAPI = {
   // 发送客服消息
   async sendServiceMessage(prompt, chatId) {
     try {
-      const response = await fetch(`${BASE_URL}/ai/service?prompt=${encodeURIComponent(prompt)}&chatId=${chatId}`, {
-        method: 'GET',
+      const response = await fetch(buildApiUrl('/ai/service', { prompt, chatId }), {
+        method: 'GET'
       })
 
       if (!response.ok) {
@@ -105,21 +113,19 @@ export const chatAPI = {
   // 发送 PDF 问答消息
   async sendPdfMessage(prompt, chatId) {
     try {
-      const response = await fetch(`${BASE_URL}/ai/pdf/chat?prompt=${encodeURIComponent(prompt)}&chatId=${chatId}`, {
+      const response = await fetch(buildApiUrl('/ai/pdf/chat', { prompt, chatId }), {
         method: 'GET',
-        // 确保使用流式响应
-        signal: AbortSignal.timeout(30000) // 30秒超时
+        signal: AbortSignal.timeout(30000)
       })
 
       if (!response.ok) {
         throw new Error(`API error: ${response.status}`)
       }
 
-      // 返回可读流
       return response.body.getReader()
     } catch (error) {
       console.error('API Error:', error)
       throw error
     }
   }
-} 
+}

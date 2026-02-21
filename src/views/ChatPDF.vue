@@ -153,7 +153,8 @@ const currentMessages = ref([])
 const chatHistory = ref([])
 const currentPdfName = ref('')
 const isDragging = ref(false)
-const BASE_URL = 'http://localhost:8080'
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/+$/, '')
+const buildApiPath = (path) => `${API_BASE_URL}${path.startsWith('/') ? path : `/${path}`}`
 
 // 配置 marked
 marked.setOptions({
@@ -260,7 +261,7 @@ const loadChat = async (chatId) => {
 
     // 从服务器获取 PDF
     isDownloadingPdf.value = true
-    const response = await fetch(`${BASE_URL}/ai/pdf/file/${chatId}`)
+    const response = await fetch(buildApiPath(`/ai/pdf/file/${chatId}`))
     if (!response.ok) throw new Error('获取 PDF 失败')
     
     // 获取文件名
@@ -340,7 +341,7 @@ const handleDrop = async (event) => {
     const uploadChatId = currentChatId.value || `pdf_${Date.now()}`
     
     // 发送上传请求，修正 API 路径
-    const response = await fetch(`${BASE_URL}/ai/pdf/upload/${uploadChatId}`, {
+    const response = await fetch(buildApiPath(`/ai/pdf/upload/${uploadChatId}`), {
       method: 'POST',
       body: formData
     })
@@ -508,7 +509,7 @@ const handleFileUpload = async (event) => {
     const uploadChatId = currentChatId.value || `pdf_${Date.now()}`
     
     // 发送上传请求，修正 API 路径
-    const response = await fetch(`${BASE_URL}/ai/pdf/upload/${uploadChatId}`, {
+    const response = await fetch(buildApiPath(`/ai/pdf/upload/${uploadChatId}`), {
       method: 'POST',
       body: formData
     })
