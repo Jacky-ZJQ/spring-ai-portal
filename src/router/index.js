@@ -27,9 +27,14 @@ const routes = [
     component: () => import('../views/ChatPDF.vue'),
   },
   {
+    path: '/coming-soon/:module',
+    name: 'coming-soon',
+    component: () => import('../views/ComingSoonView.vue'),
+  },
+  {
     path: '/comfort-simulator',
     name: 'comfort-simulator',
-    component: () => import('../views/ComfortSimulator.vue'),
+    redirect: '/coming-soon/comfort-simulator',
   },
   {
     path: '/about',

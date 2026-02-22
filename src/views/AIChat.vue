@@ -24,6 +24,17 @@
       </div>
       
       <div class="chat-main">
+        <div class="chat-main-header">
+          <div class="header-meta">
+            <h3>AI聊天实验台</h3>
+            <p>图片问答已开启，音频/视频暂不开放。</p>
+          </div>
+          <div class="header-badges">
+            <span class="badge chat-no">{{ currentChatLabel }}</span>
+            <span class="badge msg-count">{{ messageCount }} 条消息</span>
+          </div>
+        </div>
+
         <div class="messages" ref="messagesRef">
           <ChatMessage
             v-for="(message, index) in currentMessages"
@@ -88,7 +99,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, computed } from 'vue'
 import { useDark } from '@vueuse/core'
 import { 
   ChatBubbleLeftRightIcon, 
@@ -111,6 +122,11 @@ const currentMessages = ref([])
 const chatHistory = ref([])
 const fileInput = ref(null)
 const selectedFiles = ref([])
+const currentChatLabel = computed(() => {
+  if (!currentChatId.value) return '新对话'
+  return `对话 ${String(currentChatId.value).slice(-6)}`
+})
+const messageCount = computed(() => currentMessages.value.length)
 
 // 自动调整输入框高度
 const adjustTextareaHeight = () => {
@@ -523,11 +539,64 @@ onMounted(() => {
     border-radius: 1rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     overflow: hidden;  // 防止内容溢出
+
+    .chat-main-header {
+      flex-shrink: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.9rem 1.4rem 0.8rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      background: linear-gradient(110deg, rgba(0, 169, 184, 0.08), rgba(59, 178, 115, 0.04) 52%, rgba(255, 255, 255, 0.7));
+
+      .header-meta {
+        h3 {
+          margin: 0;
+          font-size: 1rem;
+          font-weight: 700;
+          color: #1f3348;
+        }
+
+        p {
+          margin: 0.2rem 0 0;
+          font-size: 0.82rem;
+          color: #5c6e84;
+        }
+      }
+
+      .header-badges {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        height: 1.75rem;
+        padding: 0 0.65rem;
+        border-radius: 999px;
+        font-size: 0.76rem;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      .chat-no {
+        color: #0a7896;
+        background: rgba(0, 169, 184, 0.14);
+      }
+
+      .msg-count {
+        color: #1a7a51;
+        background: rgba(59, 178, 115, 0.14);
+      }
+    }
     
     .messages {
       flex: 1;
       overflow-y: auto;  // 只允许消息区域滚动
-      padding: 2rem;
+      padding: 1.1rem 1.6rem 1.3rem;
     }
     
     .input-area {
@@ -727,6 +796,31 @@ onMounted(() => {
   .chat-main {
     background: rgba(40, 40, 40, 0.95);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+
+    .chat-main-header {
+      border-bottom-color: rgba(255, 255, 255, 0.08);
+      background: linear-gradient(110deg, rgba(0, 169, 184, 0.18), rgba(59, 178, 115, 0.1) 55%, rgba(26, 26, 26, 0.35));
+
+      .header-meta {
+        h3 {
+          color: #e6f4ff;
+        }
+
+        p {
+          color: #a8bfd8;
+        }
+      }
+
+      .chat-no {
+        color: #8ee6f2;
+        background: rgba(0, 169, 184, 0.2);
+      }
+
+      .msg-count {
+        color: #8ce8b8;
+        background: rgba(59, 178, 115, 0.2);
+      }
+    }
     
     .input-area {
       background: rgba(30, 30, 30, 0.98);
@@ -845,6 +939,22 @@ onMounted(() => {
     
     .chat-main {
       border-radius: 0;
+
+      .chat-main-header {
+        padding: 0.78rem 0.9rem 0.68rem;
+        align-items: flex-start;
+        flex-direction: column;
+
+        .header-badges {
+          width: 100%;
+          justify-content: flex-start;
+          flex-wrap: wrap;
+        }
+      }
+
+      .messages {
+        padding: 0.9rem 0.9rem 1rem;
+      }
     }
   }
 }

@@ -10,8 +10,8 @@
           </button>
         </div>
         <div class="history-list">
-          <div 
-            v-for="chat in chatHistory" 
+          <div
+            v-for="chat in chatHistory"
             :key="chat.id"
             class="history-item"
             :class="{ 'active': currentChatId === chat.id }"
@@ -19,6 +19,24 @@
           >
             <ChatBubbleLeftRightIcon class="icon" />
             <span class="title">{{ chat.title || '新咨询' }}</span>
+          </div>
+        </div>
+        <div class="reservation-panel">
+          <div class="reservation-header">
+            <h3>已生成预约单</h3>
+            <button class="refresh-btn" @click="loadReservations" :disabled="reservationLoading">
+              刷新
+            </button>
+          </div>
+          <div class="reservation-list">
+            <div v-if="reservationLoading" class="reservation-empty">加载中...</div>
+            <div v-else-if="reservationList.length === 0" class="reservation-empty">暂无预约单</div>
+            <div v-else v-for="item in reservationList" :key="item.id" class="reservation-item">
+              <div class="reservation-title">#{{ item.id }} {{ item.course }}</div>
+              <div class="reservation-meta">{{ item.school }}</div>
+              <div class="reservation-meta">{{ item.studentName }} / {{ maskContactInfo(item.contactInfo) }}</div>
+              <div class="reservation-time">{{ formatReservationTime(item.createdAt) }}</div>
+            </div>
           </div>
         </div>
       </div>
@@ -29,7 +47,7 @@
             <img :src="starbucksIcon" class="avatar" style="width:48px;height:48px;object-fit:contain;background:none;border-radius:12px;" />
             <div class="info">
               <h3>小星</h3>
-              <p>Starbucks程序员智能客服</p>
+              <p>Starbucks咖啡课程智能客服</p>
             </div>
           </div>
         </div>
@@ -78,11 +96,10 @@ import { ref, onMounted, nextTick } from 'vue'
 import { useDark } from '@vueuse/core'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
-import { 
-  ChatBubbleLeftRightIcon, 
+import {
+  ChatBubbleLeftRightIcon,
   PaperAirplaneIcon,
-  PlusIcon,
-  ComputerDesktopIcon
+  PlusIcon
 } from '@heroicons/vue/24/outline'
 import ChatMessage from '../components/ChatMessage.vue'
 import { chatAPI } from '../services/api'
@@ -98,6 +115,8 @@ const currentMessages = ref([])
 const chatHistory = ref([])
 const showBookingModal = ref(false)
 const bookingInfo = ref('')
+const reservationList = ref([])
+const reservationLoading = ref(false)
 
 // 配置 marked
 marked.setOptions({
@@ -105,6 +124,32 @@ marked.setOptions({
   gfm: true,     // 支持 GitHub Flavored Markdown
   sanitize: false // 允许 HTML
 })
+
+const maskContactInfo = (contactInfo) => {
+  if (!contactInfo) return '-'
+  const normalized = String(contactInfo).trim()
+  if (normalized.length < 7) return normalized
+  return `${normalized.slice(0, 3)}****${normalized.slice(-4)}`
+}
+
+const formatReservationTime = (value) => {
+  if (!value) return '-'
+  const time = new Date(value)
+  if (Number.isNaN(time.getTime())) return value
+  return time.toLocaleString()
+}
+
+const loadReservations = async () => {
+  reservationLoading.value = true
+  try {
+    reservationList.value = await chatAPI.getServiceReservations(12)
+  } catch (error) {
+    console.error('加载预约单失败:', error)
+    reservationList.value = []
+  } finally {
+    reservationLoading.value = false
+  }
+}
 
 // 自动调整输入框高度
 const adjustTextareaHeight = () => {
@@ -187,19 +232,18 @@ const sendMessage = async (content) => {
     }
 
     // 检查是否包含预约信息
-    if (accumulatedContent.includes('预约编号')) {
+    if (/(预约编号|预约单号|预约号)/.test(accumulatedContent)) {
       const bookingMatch = accumulatedContent.match(/【(.*?)】/s)
-      if (bookingMatch) {
-        // 使用 marked 处理预约信息中的 Markdown
-        bookingInfo.value = DOMPurify.sanitize(
-          marked.parse(bookingMatch[1]),
-          {
-            ADD_TAGS: ['code', 'pre', 'span'],
-            ADD_ATTR: ['class', 'language']
-          }
-        )
-        showBookingModal.value = true
-      }
+      const bookingMarkdown = bookingMatch ? bookingMatch[1] : accumulatedContent
+      bookingInfo.value = DOMPurify.sanitize(
+        marked.parse(bookingMarkdown),
+        {
+          ADD_TAGS: ['code', 'pre', 'span'],
+          ADD_ATTR: ['class', 'language']
+        }
+      )
+      showBookingModal.value = true
+      await loadReservations()
     }
   } catch (error) {
     console.error('发送消息失败:', error)
@@ -259,8 +303,9 @@ const startNewChat = async () => {  // 添加 async
   await sendMessage('你好')
 }
 
-onMounted(() => {
-  loadChatHistory()
+onMounted(async () => {
+  await loadChatHistory()
+  await loadReservations()
   adjustTextareaHeight()
 })
 </script>
@@ -366,6 +411,83 @@ onMounted(() => {
           text-overflow: ellipsis;
           white-space: nowrap;
         }
+      }
+    }
+
+    .reservation-panel {
+      flex-shrink: 0;
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+      padding: 0.75rem 1rem 1rem;
+
+      .reservation-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+
+        h3 {
+          margin: 0;
+          font-size: 0.95rem;
+          font-weight: 600;
+          color: #444;
+        }
+
+        .refresh-btn {
+          border: none;
+          background: rgba(0, 200, 83, 0.12);
+          color: #00a043;
+          font-size: 0.75rem;
+          border-radius: 999px;
+          padding: 0.25rem 0.6rem;
+          cursor: pointer;
+
+          &:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+          }
+        }
+      }
+
+      .reservation-list {
+        max-height: 230px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .reservation-item {
+        background: rgba(0, 0, 0, 0.03);
+        border-radius: 0.5rem;
+        padding: 0.55rem 0.65rem;
+      }
+
+      .reservation-title {
+        font-size: 0.83rem;
+        font-weight: 600;
+        color: #333;
+        line-height: 1.35;
+      }
+
+      .reservation-meta {
+        margin-top: 0.2rem;
+        font-size: 0.74rem;
+        color: #666;
+        line-height: 1.3;
+        word-break: break-all;
+      }
+
+      .reservation-time {
+        margin-top: 0.3rem;
+        font-size: 0.7rem;
+        color: #888;
+      }
+
+      .reservation-empty {
+        color: #888;
+        font-size: 0.78rem;
+        text-align: center;
+        padding: 0.6rem 0;
       }
     }
   }
@@ -548,6 +670,36 @@ onMounted(() => {
         color: #fff;
       }
     }
+
+    .reservation-panel {
+      border-top-color: rgba(255, 255, 255, 0.08);
+
+      .reservation-header h3 {
+        color: #ddd;
+      }
+
+      .refresh-btn {
+        background: rgba(0, 200, 83, 0.2);
+        color: #7ef0aa;
+      }
+
+      .reservation-item {
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .reservation-title {
+        color: #f3f3f3;
+      }
+
+      .reservation-meta {
+        color: #bdbdbd;
+      }
+
+      .reservation-time,
+      .reservation-empty {
+        color: #9f9f9f;
+      }
+    }
   }
   
   .chat-main {
@@ -627,4 +779,4 @@ onMounted(() => {
     }
   }
 }
-</style> 
+</style>

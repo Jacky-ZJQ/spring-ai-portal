@@ -155,6 +155,19 @@ const currentPdfName = ref('')
 const isDragging = ref(false)
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/+$/, '')
 const buildApiPath = (path) => `${API_BASE_URL}${path.startsWith('/') ? path : `/${path}`}`
+const MAX_PDF_SIZE = 10 * 1024 * 1024
+
+const validatePdfFile = (file) => {
+  if (file.type !== 'application/pdf') {
+    alert('请上传 PDF 文件')
+    return false
+  }
+  if (file.size > MAX_PDF_SIZE) {
+    alert('PDF 文件不能超过 10MB')
+    return false
+  }
+  return true
+}
 
 // 配置 marked
 marked.setOptions({
@@ -322,9 +335,8 @@ const handleDrop = async (event) => {
   // 获取第一个文件
   const file = files[0]
   
-  // 检查是否为 PDF 文件
-  if (file.type !== 'application/pdf') {
-    alert('请上传 PDF 文件')
+  // 检查文件类型与大小
+  if (!validatePdfFile(file)) {
     return
   }
   
@@ -490,9 +502,8 @@ const handleFileUpload = async (event) => {
   
   const file = files[0]
   
-  // 检查是否为 PDF 文件
-  if (file.type !== 'application/pdf') {
-    alert('请上传 PDF 文件')
+  // 检查文件类型与大小
+  if (!validatePdfFile(file)) {
     return
   }
   

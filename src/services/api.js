@@ -110,6 +110,20 @@ export const chatAPI = {
     }
   },
 
+  // 获取客服预约单列表
+  async getServiceReservations(limit = 10) {
+    try {
+      const response = await fetch(buildApiUrl('/ai/service/reservations', { limit }))
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      return await response.json()
+    } catch (error) {
+      console.error('API Error:', error)
+      return []
+    }
+  },
+
   // 发送 PDF 问答消息
   async sendPdfMessage(prompt, chatId) {
     try {

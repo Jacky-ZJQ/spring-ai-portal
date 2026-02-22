@@ -25,8 +25,7 @@ interface AppCard {
 }
 
 const isDark = useDark()
-const subtitleTarget = '练出AGI就下班'
-const typedSubtitle = ref('')
+const sloganText = '练出AGI就下班'
 
 const aiApps: AppCard[] = [
   {
@@ -53,7 +52,7 @@ const aiApps: AppCard[] = [
     id: 3,
     title: '智能客服',
     tag: 'Function Calling',
-    description: '模拟 24 小时在线客服，快速接入业务函数能力。',
+    description: '星巴克咖啡课程咨询与预约，快速接入业务函数能力。',
     route: '/customer-service',
     badge: 'Live',
     icon: UserGroupIcon,
@@ -71,20 +70,20 @@ const aiApps: AppCard[] = [
   },
   {
     id: 5,
-    title: 'MCP网关 todo',
+    title: 'MCP网关',
     tag: 'MCP',
     description: '解决各类业务接口(http/rpc)便捷转换为MCP协议接口而设计实现。',
-    route: '/chat-pdf',
+    route: '/coming-soon/mcp-gateway',
     badge: 'Todo',
     icon: CommandLineIcon,
     accent: '#0ea5e9',
   },
   {
     id: 6,
-    title: 'SKILLS todo',
+    title: 'Skills',
     tag: 'SKILLS',
     description: '技能编排入口（待完善）。',
-    route: '/chat-pdf',
+    route: '/coming-soon/skills',
     badge: 'Todo',
     icon: WrenchScrewdriverIcon,
     accent: '#f59e0b',
@@ -94,7 +93,7 @@ const aiApps: AppCard[] = [
     title: '舒适区突破器',
     tag: '行为实验',
     description: '把目标拆成小步行动，让想法从“会”变成“做”。',
-    route: '/comfort-simulator',
+    route: '/coming-soon/comfort-simulator',
     badge: 'Try',
     icon: SparklesIcon,
     accent: '#efb91f',
@@ -112,7 +111,7 @@ const aiApps: AppCard[] = [
 ]
 
 const carouselTexts = [
-  '距离AGI结丹还有█░░░░░░░░░99%',
+  '距离AGI结丹还有█░░░░░░░99%',
   '今天也是面向GPT编程的一天',
   'Bug转化率100% ✓',
   'Ctrl+C, Ctrl+V 工程师',
@@ -167,19 +166,6 @@ const resumeCarousel = () => {
   isCarouselPaused.value = false
 }
 
-const startTypewriter = () => {
-  typedSubtitle.value = ''
-  let charIndex = 0
-  clearInterval(typewriterTimer)
-  typewriterTimer = setInterval(() => {
-    charIndex += 1
-    typedSubtitle.value = subtitleTarget.slice(0, charIndex)
-    if (charIndex >= subtitleTarget.length) {
-      clearInterval(typewriterTimer)
-    }
-  }, 120)
-}
-
 const startCarousel = () => {
   clearInterval(carouselTimer)
   carouselTimer = setInterval(() => {
@@ -190,12 +176,10 @@ const startCarousel = () => {
 }
 
 onMounted(() => {
-  startTypewriter()
   startCarousel()
 })
 
 onBeforeUnmount(() => {
-  clearInterval(typewriterTimer)
   clearInterval(carouselTimer)
 })
 </script>
@@ -209,11 +193,15 @@ onBeforeUnmount(() => {
     </div>
 
     <section class="hero">
-      <h2 class="hero-title">Jacky的AI炼丹炉</h2>
-      <p class="hero-subtitle">
-        <span>{{ typedSubtitle }}</span>
-        <span class="typing-cursor" aria-hidden="true">▊</span>
-      </p>
+      <div class="hero-title-wrap">
+        <h2 class="hero-title">
+          <span class="title-main">Jacky的AI炼丹炉</span>
+          <span class="title-slogan-inline">
+            {{ sloganText }}
+            <span class="typing-cursor" aria-hidden="true">▊</span>
+          </span>
+        </h2>
+      </div>
 <!--      <p class="hero-copy">-->
 <!--        一个能快速试错、快速上线、快速复盘的 AI 主页。现看到的是所有实验入口的发射台。-->
 <!--      </p>-->
@@ -278,7 +266,7 @@ onBeforeUnmount(() => {
   position: relative;
   min-height: calc(100vh - 78px);
   overflow: hidden;
-  padding: clamp(1rem, 3vw, 2.2rem) clamp(1rem, 4vw, 3.5rem) 3rem;
+  padding: clamp(0.7rem, 2vw, 1.35rem) clamp(1rem, 4vw, 3.5rem) 2.8rem;
   background: var(--page-bg);
   color: var(--text-main);
   font-family: 'Avenir Next', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
@@ -336,10 +324,15 @@ onBeforeUnmount(() => {
 .hero {
   position: relative;
   z-index: 1;
-  max-width: 900px;
+  max-width: 860px;
   margin: 0 auto;
   text-align: center;
   animation: riseUp 0.7s ease-out both;
+}
+
+.hero-title-wrap {
+  display: inline-block;
+  position: relative;
 }
 
 .eyebrow {
@@ -361,25 +354,44 @@ onBeforeUnmount(() => {
 }
 
 .hero-title {
-  margin-top: 1.2rem;
+  margin-top: 0.55rem;
+  margin-bottom: 0.2rem;
   font-size: clamp(2rem, 5vw, 3.7rem);
   line-height: 1.1;
   font-family: 'Avenir Next Condensed', 'Trebuchet MS', 'PingFang SC', sans-serif;
   letter-spacing: 0.01em;
-  text-wrap: balance;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.36rem;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  z-index: 1;
 }
 
-.hero-subtitle {
-  margin-top: 0.8rem;
-  min-height: 2rem;
-  font-size: clamp(1rem, 2.15vw, 1.35rem);
-  color: color-mix(in srgb, var(--text-main) 82%, #4caf50 18%);
+.title-main {
+  line-height: 1.08;
+  display: inline-block;
+}
+
+.title-slogan-inline {
+  display: inline-flex;
+  align-items: center;
+  font-size: clamp(0.72rem, 1.18vw, 0.93rem);
+  color: color-mix(in srgb, #0b8f5d 72%, var(--text-main) 28%);
   font-family: 'Fira Code', 'JetBrains Mono', 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+  font-weight: 700;
+  opacity: 0.92;
+  text-shadow: 0 4px 12px rgba(16, 124, 85, 0.2);
+  z-index: 2;
+  margin-bottom: 0;
+  transform: translateY(-0.05em);
 }
 
 .typing-cursor {
   display: inline-block;
-  margin-left: 0.2rem;
+  margin-left: 0.12rem;
   color: #27c47a;
   animation: cursorBlink 1s steps(1, end) infinite;
 }
@@ -392,7 +404,7 @@ onBeforeUnmount(() => {
 }
 
 .hero-actions {
-  margin-top: 1.5rem;
+  margin-top: 0.85rem;
   display: flex;
   justify-content: center;
   gap: 0.9rem;
@@ -430,7 +442,7 @@ onBeforeUnmount(() => {
 .apps-grid {
   position: relative;
   z-index: 1;
-  margin-top: 1.7rem;
+  margin-top: 1.05rem;
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 1rem;
@@ -549,12 +561,12 @@ h2 {
 .quote-carousel {
   position: relative;
   z-index: 1;
-  margin-top: 1.4rem;
-  min-height: 92px;
+  margin-top: 0.55rem;
+  min-height: 70px;
   border-radius: 20px;
   border: 1px solid var(--panel-border);
   background: rgba(255, 255, 255, 0.56);
-  padding: 1.15rem 1.2rem 1.65rem;
+  padding: 0.75rem 1rem 1.3rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -581,7 +593,7 @@ h2 {
 .quote-text {
   margin: 0;
   text-align: center;
-  font-size: clamp(1.05rem, 2.4vw, 1.58rem);
+  font-size: clamp(0.96rem, 2.05vw, 1.26rem);
   font-weight: 700;
   text-wrap: balance;
   background-image: var(--quote-gradient);
@@ -593,9 +605,9 @@ h2 {
 .quote-counter {
   position: absolute;
   right: 0.75rem;
-  bottom: 0.55rem;
+  bottom: 0.38rem;
   margin: 0;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   color: var(--text-sub);
 }
 
@@ -666,6 +678,17 @@ h2 {
     min-height: calc(100vh - 68px);
   }
 
+  .hero-title {
+    margin-top: 0.35rem;
+    font-size: clamp(1.38rem, 7vw, 1.92rem);
+    gap: 0.2rem;
+  }
+
+  .title-slogan-inline {
+    font-size: clamp(0.5rem, 2.3vw, 0.7rem);
+    margin-bottom: 0;
+  }
+
   .hero-copy {
     font-size: 0.95rem;
   }
@@ -676,21 +699,20 @@ h2 {
   }
 
   .quote-carousel {
-    min-height: 104px;
-    padding-bottom: 1.8rem;
+    min-height: 86px;
+    padding: 0.7rem 0.85rem 1.4rem;
   }
 
   .quote-counter {
     right: 0.68rem;
-    bottom: 0.5rem;
-    font-size: 0.74rem;
+    bottom: 0.38rem;
+    font-size: 0.7rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hero,
   .app-card,
-  .typing-cursor,
   .orb {
     animation: none;
   }

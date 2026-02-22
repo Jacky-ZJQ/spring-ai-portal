@@ -31,6 +31,10 @@ router.beforeEach((to, from, next) => {
         <span class="portal-badge">Spring AI Portal</span>
         <span class="logo-text">Jacky's AI DevSpace</span>
       </router-link>
+      <div class="notice-float">
+        <span class="notice-pill notice-full">公告：模型余额告急，小星提醒你省着点聊～</span>
+        <span class="notice-pill notice-compact">余额告急，省着聊～</span>
+      </div>
       <button @click="toggleDark()" class="theme-toggle">
         <SunIcon v-if="isDark" class="icon" />
         <MoonIcon v-else class="icon" />
@@ -121,6 +125,36 @@ body {
     line-height: 1;
   }
 
+  .notice-pill {
+    display: inline-flex;
+    align-items: center;
+    max-width: 34rem;
+    padding: 0.27rem 0.62rem;
+    border-radius: 999px;
+    font-size: 0.73rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: #9f4b13;
+    background: linear-gradient(135deg, rgba(255, 172, 88, 0.2), rgba(255, 123, 102, 0.22));
+    border: 1px solid rgba(216, 121, 54, 0.32);
+    white-space: nowrap;
+    box-shadow: 0 8px 20px rgba(186, 86, 32, 0.22);
+    backdrop-filter: blur(8px);
+    animation: noticeFloat 3.8s ease-in-out infinite;
+  }
+
+  .notice-compact {
+    display: none;
+  }
+
+  .notice-float {
+    position: absolute;
+    right: 4.2rem;
+    top: 0.2rem;
+    z-index: 3;
+    pointer-events: none;
+  }
+
   .theme-toggle {
     background: none;
     border: none;
@@ -128,6 +162,7 @@ body {
     padding: 0.5rem;
     border-radius: 50%;
     transition: background-color 0.3s;
+    z-index: 4;
 
     &:hover {
       background: rgba(255, 255, 255, 0.1);
@@ -150,6 +185,13 @@ body {
       color: #cbf7ff;
       box-shadow: inset 0 0 0 1px rgba(193, 241, 255, 0.22), 0 6px 12px rgba(0, 0, 0, 0.18);
     }
+
+    .notice-pill {
+      color: #ffd5bd;
+      background: linear-gradient(135deg, rgba(255, 146, 96, 0.22), rgba(255, 90, 132, 0.22));
+      border-color: rgba(255, 167, 140, 0.38);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+    }
   }
 }
 
@@ -163,6 +205,16 @@ body {
   opacity: 0;
 }
 
+@keyframes noticeFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
 @media (max-width: 768px) {
   .navbar {
     padding: 1rem;
@@ -170,11 +222,28 @@ body {
     .logo {
       gap: 0.45rem;
       font-size: 1.02rem;
+      align-items: center;
     }
 
     .portal-badge {
       font-size: 0.62rem;
       padding: 0.25rem 0.54rem;
+    }
+
+    .notice-full {
+      display: none;
+    }
+
+    .notice-compact {
+      display: inline-flex;
+      max-width: 9.4rem;
+      font-size: 0.66rem;
+      padding: 0.22rem 0.52rem;
+    }
+
+    .notice-float {
+      right: 3.2rem;
+      top: 0.22rem;
     }
   }
 }

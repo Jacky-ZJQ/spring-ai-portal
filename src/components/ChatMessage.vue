@@ -1,7 +1,7 @@
 <template>
   <div class="message" :class="{ 'message-user': isUser }">
     <div class="avatar">
-      <UserCircleIcon v-if="isUser" class="icon" />
+      <img v-if="isUser" :src="userAvatarUrl || defaultUserAvatarUrl" class="icon user-avatar" alt="user-avatar" />
       <img v-else :src="starbucksIcon" class="icon assistant" style="width:40px;height:40px;object-fit:contain;background:none;border-radius:8px;" />
     </div>
     <div class="content">
@@ -29,7 +29,7 @@
 import { computed, onMounted, nextTick, ref, watch } from 'vue'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
-import { UserCircleIcon, DocumentDuplicateIcon, CheckIcon } from '@heroicons/vue/24/outline'
+import { DocumentDuplicateIcon, CheckIcon } from '@heroicons/vue/24/outline'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/github-dark.css'
 import starbucksIcon from '../assets/starbucks-icon.svg'
@@ -37,6 +37,60 @@ import starbucksIcon from '../assets/starbucks-icon.svg'
 const contentRef = ref(null)
 const copied = ref(false)
 const copyButtonTitle = computed(() => copied.value ? '已复制' : '复制内容')
+const userAvatarUrl = ref('')
+const USER_AVATAR_SEED_KEY = 'spring_ai_portal_user_avatar_seed'
+
+const avatarPalettes = [
+  ['#37c871', '#00a9b8'],
+  ['#ff8a3d', '#f2b701'],
+  ['#3b82f6', '#6366f1'],
+  ['#ff6b6b', '#f97316'],
+  ['#22c55e', '#14b8a6'],
+  ['#8b5cf6', '#ec4899']
+]
+
+const hashString = (value) => {
+  let hash = 0
+  for (let i = 0; i < value.length; i += 1) {
+    hash = (hash << 5) - hash + value.charCodeAt(i)
+    hash |= 0
+  }
+  return Math.abs(hash)
+}
+
+const getOrCreateAvatarSeed = () => {
+  const cached = localStorage.getItem(USER_AVATAR_SEED_KEY)
+  if (cached) return cached
+  const seed = Math.random().toString(36).slice(2, 10)
+  localStorage.setItem(USER_AVATAR_SEED_KEY, seed)
+  return seed
+}
+
+const buildAvatarDataUri = (seed) => {
+  const hash = hashString(seed)
+  const [startColor, endColor] = avatarPalettes[hash % avatarPalettes.length]
+  const shapeColor = `rgba(255,255,255,${0.25 + (hash % 30) / 100})`
+  const svg = `
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="${startColor}" />
+      <stop offset="100%" stop-color="${endColor}" />
+    </linearGradient>
+  </defs>
+  <rect width="80" height="80" rx="40" fill="url(#bg)" />
+  <circle cx="40" cy="30" r="14" fill="${shapeColor}" />
+  <path d="M12 74c4-16 16-24 28-24s24 8 28 24" fill="${shapeColor}" />
+</svg>
+`.trim()
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`
+}
+
+const defaultUserAvatarUrl = buildAvatarDataUri('default-avatar')
+
+const setupUserAvatar = () => {
+  userAvatarUrl.value = buildAvatarDataUri(getOrCreateAvatarSeed())
+}
 
 // 配置 marked
 marked.setOptions({
@@ -236,6 +290,9 @@ watch(() => props.message.content, () => {
 
 // 初始化时也执行一次
 onMounted(() => {
+  if (isUser.value) {
+    setupUserAvatar()
+  }
   if (!isUser.value) {
     highlightCode()
   }
@@ -318,6 +375,13 @@ const formatTime = (timestamp) => {
       padding: 4px;
       border-radius: 8px;
       transition: all 0.3s ease;
+
+      &.user-avatar {
+        padding: 0;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+      }
 
       &.assistant {
         color: #333;
