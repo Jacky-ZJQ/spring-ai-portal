@@ -74,7 +74,7 @@ const aiApps: AppCard[] = [
     tag: 'MCP',
     description: '解决各类业务接口(http/rpc)便捷转换为MCP协议接口而设计实现。',
     route: '/coming-soon/mcp-gateway',
-    badge: 'Todo',
+    badge: '建设中',
     icon: CommandLineIcon,
     accent: '#0ea5e9',
   },
@@ -84,7 +84,7 @@ const aiApps: AppCard[] = [
     tag: 'SKILLS',
     description: '技能编排入口（待完善）。',
     route: '/coming-soon/skills',
-    badge: 'Todo',
+    badge: '建设中',
     icon: WrenchScrewdriverIcon,
     accent: '#f59e0b',
   },
@@ -94,7 +94,7 @@ const aiApps: AppCard[] = [
     tag: '行为实验',
     description: '把目标拆成小步行动，让想法从“会”变成“做”。',
     route: '/coming-soon/comfort-simulator',
-    badge: 'Try',
+    badge: '建设中',
     icon: SparklesIcon,
     accent: '#efb91f',
   },
@@ -115,7 +115,7 @@ const carouselTexts = [
   '今天也是面向GPT编程的一天',
   'Bug转化率100% ✓',
   'Ctrl+C, Ctrl+V 工程师',
-  '需求又变了 (微笑)',
+  '需求又变了 -_-|||',
   '代码能跑就不要动',
   '编译不过，一定是电脑的问题',
   '这Bug是feature，不改',
@@ -202,9 +202,6 @@ onBeforeUnmount(() => {
           </span>
         </h2>
       </div>
-<!--      <p class="hero-copy">-->
-<!--        一个能快速试错、快速上线、快速复盘的 AI 主页。现看到的是所有实验入口的发射台。-->
-<!--      </p>-->
       <div class="hero-actions">
         <router-link to="/ai-chat" class="btn btn-primary">开始体验</router-link>
         <router-link to="/chat-pdf" class="btn btn-secondary">打开知识库</router-link>
@@ -248,7 +245,7 @@ onBeforeUnmount(() => {
         <h2>{{ app.title }}</h2>
         <p class="tag">{{ app.tag }}</p>
         <p class="desc">{{ app.description }}</p>
-        <span class="cta">进入实验</span>
+        <span class="cta">进入炼丹</span>
       </router-link>
     </section>
   </main>

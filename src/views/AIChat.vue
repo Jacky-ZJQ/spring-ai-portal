@@ -27,7 +27,7 @@
         <div class="chat-main-header">
           <div class="header-meta">
             <h3>AI聊天实验台</h3>
-            <p>图片问答已开启，音频/视频暂不开放。</p>
+            <p>图片问答已开启，音频/视频暂不开放，模型余额不足...</p>
           </div>
           <div class="header-badges">
             <span class="badge chat-no">{{ currentChatLabel }}</span>

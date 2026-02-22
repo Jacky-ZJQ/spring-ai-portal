@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useDark } from '@vueuse/core'
 import { chatAPI } from '../services/api.js'
 
@@ -8,6 +8,18 @@ const releasingMemory = ref(false)
 const cleaningFiles = ref(false)
 const maintenanceError = ref('')
 const maintenanceResult = ref(null)
+const opsTipMode = ref('default')
+
+// 根据当前悬停按钮切换维护说明，帮助用户快速理解每个动作的影响范围。
+const opsTipText = computed(() => {
+  if (opsTipMode.value === 'memory') {
+    return '手动释放内存会执行三项操作：清理 ChatMemory、清理会话历史索引、清理配额计数。'
+  }
+  if (opsTipMode.value === 'cleanup') {
+    return '手动清理过期文件会删除超出 7 天保留期的 PDF 与聊天图片文件。'
+  }
+  return '将鼠标悬停到按钮上可查看动作说明：释放内存会清理运行态缓存，文件清理会删除 7 天前的过期文件。'
+})
 
 const labModules = [
   {
@@ -59,21 +71,37 @@ const roadmap = [
     phase: 'Phase 01',
     title: '基础设施稳定',
     detail: '统一 Docker 部署、环境配置模板、上线与回滚 SOP。',
+    milestone: '完成单机发布基线',
+    window: '第 1-2 周',
+    icon: '🧱',
+    color: '#2f88ff'
   },
   {
     phase: 'Phase 02',
     title: '业务能力打通',
     detail: '完成聊天、知识库、预约流程的闭环，并沉淀可复用接口。',
+    milestone: '端到端业务闭环跑通',
+    window: '第 3-4 周',
+    icon: '🔗',
+    color: '#2ec6b6'
   },
   {
     phase: 'Phase 03',
     title: '工程效率提升',
     detail: '补齐日志追踪、异常告警、可观测看板和安全策略。',
+    milestone: '形成可观测运维体系',
+    window: '第 5-6 周',
+    icon: '📡',
+    color: '#7d6dff'
   },
   {
     phase: 'Phase 04',
     title: '产品化与增长',
     detail: '打磨体验与性能，扩展更多可落地的行业场景模块。',
+    milestone: '实现可持续迭代增长',
+    window: '第 7-8 周',
+    icon: '🚀',
+    color: '#ff8f4a'
   },
 ]
 
@@ -122,52 +150,11 @@ const formatActionTime = (isoTime) => {
       <p class="eyebrow">About Lab</p>
       <h1>关于实验室</h1>
       <p class="intro">
-        这是 Jacky 的 AI 实验主站，目标不是“做一个演示”，而是把每个想法快速变成可运行、可验证、可上线的产品能力。
+        这是 Jacky 的 AI 实验主站，目标是把每个想法快速变成可运行、可验证、可上线的产品能力。
       </p>
       <div class="hero-actions">
         <router-link to="/" class="btn btn-primary">返回首页</router-link>
         <router-link to="/ai-chat" class="btn btn-secondary">直接开始实验</router-link>
-      </div>
-    </section>
-
-    <section class="panel ops-panel">
-      <div class="panel-head">
-        <h2>运行维护</h2>
-        <span class="chip">Operations</span>
-      </div>
-      <p class="ops-tip">
-        可在页面内手动释放后端内存，或立即触发一次过期 PDF/图片清理，无需 SSH 登录服务器。
-      </p>
-      <div class="ops-actions">
-        <button class="btn btn-primary" :disabled="releasingMemory" @click="runReleaseMemory">
-          {{ releasingMemory ? '释放中...' : '手动释放内存' }}
-        </button>
-        <button class="btn btn-secondary" :disabled="cleaningFiles" @click="runCleanupFiles">
-          {{ cleaningFiles ? '清理中...' : '手动清理过期文件' }}
-        </button>
-      </div>
-      <p v-if="maintenanceError" class="ops-error">{{ maintenanceError }}</p>
-
-      <div v-if="maintenanceResult" class="ops-result">
-        <p class="ops-time">最近执行：{{ formatActionTime(maintenanceResult.time) }}</p>
-        <p v-if="maintenanceResult.beforeUsedMb !== undefined">
-          内存占用：{{ maintenanceResult.beforeUsedMb }}MB -> {{ maintenanceResult.afterUsedMb }}MB
-        </p>
-        <p v-if="maintenanceResult.clearedChatSessions !== undefined">
-          已清理会话内存：{{ maintenanceResult.clearedChatSessions }} 条
-        </p>
-        <p v-if="maintenanceResult.clearedHistorySessions !== undefined">
-          已清理会话历史索引：{{ maintenanceResult.clearedHistorySessions }} 条
-        </p>
-        <p v-if="maintenanceResult.clearedQuotaUsers !== undefined">
-          已清理配额计数用户：{{ maintenanceResult.clearedQuotaUsers }} 个
-        </p>
-        <p v-if="maintenanceResult.deletedPdfFiles !== undefined">
-          已删除过期 PDF：{{ maintenanceResult.deletedPdfFiles }} 个
-        </p>
-        <p v-if="maintenanceResult.deletedImageFiles !== undefined">
-          已删除过期聊天图片：{{ maintenanceResult.deletedImageFiles }} 个
-        </p>
       </div>
     </section>
 
@@ -205,7 +192,15 @@ const formatActionTime = (isoTime) => {
           class="module-card"
           :style="{ '--accent': module.accent }"
         >
-          <p class="module-status">{{ module.status }}</p>
+          <p
+            class="module-status"
+            :class="{
+              'status-live': module.status === '已上线',
+              'status-building': module.status === '建设中'
+            }"
+          >
+            {{ module.status }}
+          </p>
           <h3>{{ module.title }}</h3>
           <p>{{ module.subtitle }}</p>
           <span class="module-link">查看模块 →</span>
@@ -247,12 +242,85 @@ const formatActionTime = (isoTime) => {
         <h2>路线图</h2>
         <span class="chip">Roadmap</span>
       </div>
+      <p class="roadmap-intro">
+        以“可上线、可回滚、可增长”为主线推进，每个阶段都有明确里程碑与时间窗口。
+      </p>
       <div class="roadmap">
-        <article v-for="item in roadmap" :key="item.phase" class="roadmap-item">
-          <p class="phase">{{ item.phase }}</p>
-          <h3>{{ item.title }}</h3>
-          <p>{{ item.detail }}</p>
+        <div class="roadmap-line" aria-hidden="true"></div>
+        <article
+          v-for="item in roadmap"
+          :key="item.phase"
+          class="roadmap-item"
+          :style="{ '--roadmap-accent': item.color }"
+        >
+          <div class="roadmap-dot" aria-hidden="true">
+            <span>{{ item.icon }}</span>
+          </div>
+          <div class="roadmap-card">
+            <p class="phase">{{ item.phase }}</p>
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.detail }}</p>
+            <div class="roadmap-meta">
+              <span>{{ item.milestone }}</span>
+              <span>{{ item.window }}</span>
+            </div>
+          </div>
         </article>
+      </div>
+    </section>
+
+    <section class="panel ops-panel">
+      <div class="panel-head">
+        <h2>运行维护</h2>
+        <span class="chip">Operations</span>
+      </div>
+      <p class="ops-tip">{{ opsTipText }}</p>
+      <div class="ops-actions">
+        <button
+          class="btn btn-primary"
+          :disabled="releasingMemory"
+          @mouseenter="opsTipMode = 'memory'"
+          @mouseleave="opsTipMode = 'default'"
+          @focus="opsTipMode = 'memory'"
+          @blur="opsTipMode = 'default'"
+          @click="runReleaseMemory"
+        >
+          {{ releasingMemory ? '释放中...' : '手动释放内存' }}
+        </button>
+        <button
+          class="btn btn-cleanup"
+          :disabled="cleaningFiles"
+          @mouseenter="opsTipMode = 'cleanup'"
+          @mouseleave="opsTipMode = 'default'"
+          @focus="opsTipMode = 'cleanup'"
+          @blur="opsTipMode = 'default'"
+          @click="runCleanupFiles"
+        >
+          {{ cleaningFiles ? '清理中...' : '手动清理过期文件' }}
+        </button>
+      </div>
+      <p v-if="maintenanceError" class="ops-error">{{ maintenanceError }}</p>
+
+      <div v-if="maintenanceResult" class="ops-result">
+        <p class="ops-time">最近执行：{{ formatActionTime(maintenanceResult.time) }}</p>
+        <p v-if="maintenanceResult.beforeUsedMb !== undefined">
+          内存占用：{{ maintenanceResult.beforeUsedMb }}MB -> {{ maintenanceResult.afterUsedMb }}MB
+        </p>
+        <p v-if="maintenanceResult.clearedChatSessions !== undefined">
+          已清理会话内存：{{ maintenanceResult.clearedChatSessions }} 条
+        </p>
+        <p v-if="maintenanceResult.clearedHistorySessions !== undefined">
+          已清理会话历史索引：{{ maintenanceResult.clearedHistorySessions }} 条
+        </p>
+        <p v-if="maintenanceResult.clearedQuotaUsers !== undefined">
+          已清理配额计数用户：{{ maintenanceResult.clearedQuotaUsers }} 个
+        </p>
+        <p v-if="maintenanceResult.deletedPdfFiles !== undefined">
+          已删除过期 PDF：{{ maintenanceResult.deletedPdfFiles }} 个
+        </p>
+        <p v-if="maintenanceResult.deletedImageFiles !== undefined">
+          已删除过期聊天图片：{{ maintenanceResult.deletedImageFiles }} 个
+        </p>
       </div>
     </section>
   </main>
@@ -292,6 +360,38 @@ const formatActionTime = (isoTime) => {
 
 .about-lab.dark .ops-time {
   color: #8ed8ff;
+}
+
+.about-lab.dark .ops-actions .btn-cleanup {
+  color: #fff2de;
+  background: linear-gradient(118deg, #b9672f 0%, #d4853e 100%);
+  box-shadow: 0 10px 20px rgba(195, 117, 57, 0.3);
+}
+
+.about-lab.dark .roadmap-line {
+  opacity: 0.9;
+}
+
+.about-lab.dark .roadmap-dot {
+  border-color: color-mix(in srgb, var(--roadmap-accent) 58%, rgba(219, 234, 254, 0.42));
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--roadmap-accent) 26%, rgba(12, 22, 37, 0.84)),
+    rgba(10, 20, 34, 0.9)
+  );
+}
+
+.about-lab.dark .roadmap-card {
+  background: linear-gradient(
+    152deg,
+    color-mix(in srgb, var(--roadmap-accent) 20%, rgba(8, 18, 33, 0.92)),
+    rgba(10, 21, 36, 0.88)
+  );
+}
+
+.about-lab.dark .roadmap-meta span {
+  color: color-mix(in srgb, var(--roadmap-accent) 62%, #e8f3ff 38%);
+  background: color-mix(in srgb, var(--roadmap-accent) 22%, rgba(15, 31, 50, 0.84));
 }
 
 .hero {
@@ -376,6 +476,7 @@ const formatActionTime = (isoTime) => {
 .ops-tip {
   color: var(--text-sub);
   line-height: 1.55;
+  min-height: 3.1em;
 }
 
 .ops-actions {
@@ -388,6 +489,16 @@ const formatActionTime = (isoTime) => {
 .ops-actions .btn {
   border: none;
   cursor: pointer;
+}
+
+.ops-actions .btn-cleanup {
+  color: #fff;
+  background: linear-gradient(118deg, #ff9246 0%, #ffb45f 100%);
+  box-shadow: 0 10px 22px rgba(255, 150, 81, 0.32);
+}
+
+.ops-actions .btn-cleanup:hover:not(:disabled) {
+  box-shadow: 0 14px 28px rgba(255, 150, 81, 0.4);
 }
 
 .ops-actions .btn:disabled {
@@ -496,8 +607,31 @@ const formatActionTime = (isoTime) => {
 
 .module-status {
   font-size: 0.76rem;
-  color: color-mix(in srgb, var(--accent) 70%, #2f3b4f 30%);
   font-weight: 700;
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.18rem 0.56rem;
+  border-radius: 999px;
+}
+
+.module-status.status-live {
+  color: #1f7a4d;
+  background: rgba(46, 198, 136, 0.16);
+}
+
+.module-status.status-building {
+  color: #c63f3f;
+  background: rgba(236, 91, 91, 0.16);
+}
+
+.about-lab.dark .module-status.status-live {
+  color: #8ef3bf;
+  background: rgba(46, 198, 136, 0.2);
+}
+
+.about-lab.dark .module-status.status-building {
+  color: #ffb2b2;
+  background: rgba(236, 91, 91, 0.2);
 }
 
 .module-card h3 {
@@ -550,36 +684,114 @@ const formatActionTime = (isoTime) => {
   margin-top: 0.45rem;
 }
 
+.roadmap-intro {
+  color: var(--text-sub);
+  line-height: 1.55;
+}
+
 .roadmap {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.75rem;
+  gap: 0.85rem;
+  margin-top: 0.82rem;
+}
+
+.roadmap-line {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: 1.55rem;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #2f88ff 0%, #2ec6b6 35%, #7d6dff 68%, #ff8f4a 100%);
+  opacity: 0.7;
+  pointer-events: none;
 }
 
 .roadmap-item {
-  border: 1px solid var(--panel-border);
+  --roadmap-accent: #2f88ff;
+
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.62rem;
+}
+
+.roadmap-dot {
+  width: 3.1rem;
+  height: 3.1rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid color-mix(in srgb, var(--roadmap-accent) 50%, #ffffff 50%);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--roadmap-accent) 20%, #ffffff 80%), #ffffff);
+  box-shadow: 0 10px 18px color-mix(in srgb, var(--roadmap-accent) 28%, transparent);
+}
+
+.roadmap-dot span {
+  font-size: 1.2rem;
+}
+
+.roadmap-card {
+  width: 100%;
+  border: 1px solid color-mix(in srgb, var(--roadmap-accent) 42%, var(--panel-border));
   border-radius: 14px;
   padding: 0.78rem 0.82rem;
-  background: rgba(255, 255, 255, 0.5);
+  background: linear-gradient(
+    152deg,
+    color-mix(in srgb, var(--roadmap-accent) 12%, rgba(255, 255, 255, 0.9)),
+    rgba(255, 255, 255, 0.62)
+  );
+  box-shadow: 0 10px 20px color-mix(in srgb, var(--roadmap-accent) 18%, transparent);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.roadmap-item:hover .roadmap-card {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 25px color-mix(in srgb, var(--roadmap-accent) 24%, transparent);
 }
 
 .phase {
   font-size: 0.72rem;
-  color: #3789b2;
+  color: color-mix(in srgb, var(--roadmap-accent) 76%, #3e5168 24%);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
-.roadmap-item h3 {
+.roadmap-card h3 {
   margin-top: 0.36rem;
   font-size: 0.98rem;
 }
 
-.roadmap-item p {
+.roadmap-card p {
   margin-top: 0.35rem;
   color: var(--text-sub);
   line-height: 1.45;
+}
+
+.roadmap-meta {
+  margin-top: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.34rem;
+}
+
+.roadmap-meta span {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  padding: 0.22rem 0.58rem;
+  border-radius: 999px;
+  font-size: 0.73rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: color-mix(in srgb, var(--roadmap-accent) 75%, #243548 25%);
+  background: color-mix(in srgb, var(--roadmap-accent) 16%, rgba(255, 255, 255, 0.86));
 }
 
 @media (max-width: 1024px) {
@@ -589,6 +801,10 @@ const formatActionTime = (isoTime) => {
 
   .module-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .roadmap-line {
+    display: none;
   }
 
   .roadmap {
@@ -615,6 +831,18 @@ const formatActionTime = (isoTime) => {
   .split,
   .roadmap {
     grid-template-columns: 1fr;
+  }
+
+  .roadmap-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: 0.62rem;
+  }
+
+  .roadmap-dot {
+    width: 2.75rem;
+    height: 2.75rem;
   }
 }
 </style>
