@@ -1,42 +1,46 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import GameChat from '../views/GameChat.vue'
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: () => import('../views/Home.vue')
+    name: 'home',
+    component: () => import('../views/HomeView.vue'),
   },
   {
     path: '/ai-chat',
-    name: 'AIChat',
-    component: () => import('../views/AIChat.vue')
-  },
-  {
-    path: '/comfort-simulator',
-    name: 'ComfortSimulator',
-    component: () => import('../views/ComfortSimulator.vue')
-  },
-  {
-    path: '/customer-service',
-    name: 'CustomerService',
-    component: () => import('../views/CustomerService.vue')
-  },
-  {
-    path: '/chat-pdf',
-    name: 'ChatPDF',
-    component: () => import('../views/ChatPDF.vue')
+    name: 'ai-chat',
+    component: () => import('../views/AIChat.vue'),
   },
   {
     path: '/game',
     name: 'game',
-    component: () => import('../views/GameChat.vue')
-  }
+    component: () => import('../views/GameChat.vue'),
+  },
+  {
+    path: '/customer-service',
+    name: 'customer-service',
+    component: () => import('../views/CustomerService.vue'),
+  },
+  {
+    path: '/chat-pdf',
+    name: 'chat-pdf',
+    component: () => import('../views/ChatPDF.vue'),
+  },
+  {
+    path: '/comfort-simulator',
+    name: 'comfort-simulator',
+    component: () => import('../views/ComfortSimulator.vue'),
+  },
+  {
+    path: '/about',
+    name: 'about',
+    component: () => import('../views/AboutView.vue'),
+  },
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes,
 })
 
-export default router 
+export default router
