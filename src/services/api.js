@@ -141,5 +141,42 @@ export const chatAPI = {
       console.error('API Error:', error)
       throw error
     }
+  },
+
+  // 手动释放后端运行时内存（可选同时清理过期文件）
+  async releaseRuntimeMemory(options = { forceGc: true, cleanupFiles: false }) {
+    try {
+      const { forceGc = true, cleanupFiles = false } = options || {}
+      const response = await fetch(
+        buildApiUrl('/ai/system/release-memory', {
+          forceGc: String(forceGc),
+          cleanupFiles: String(cleanupFiles)
+        }),
+        { method: 'POST' }
+      )
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      return await response.json()
+    } catch (error) {
+      console.error('API Error:', error)
+      throw error
+    }
+  },
+
+  // 手动执行一次过期文件清理
+  async cleanupExpiredFiles() {
+    try {
+      const response = await fetch(buildApiPath('/ai/system/cleanup-files'), {
+        method: 'POST'
+      })
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      return await response.json()
+    } catch (error) {
+      console.error('API Error:', error)
+      throw error
+    }
   }
 }

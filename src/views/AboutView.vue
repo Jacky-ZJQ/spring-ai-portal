@@ -1,23 +1,15 @@
-<script setup lang="ts">
+<script setup>
+import { ref } from 'vue'
 import { useDark } from '@vueuse/core'
-
-interface LabModule {
-  title: string
-  subtitle: string
-  status: string
-  route: string
-  accent: string
-}
-
-interface RoadmapItem {
-  phase: string
-  title: string
-  detail: string
-}
+import { chatAPI } from '../services/api.js'
 
 const isDark = useDark()
+const releasingMemory = ref(false)
+const cleaningFiles = ref(false)
+const maintenanceError = ref('')
+const maintenanceResult = ref(null)
 
-const labModules: LabModule[] = [
+const labModules = [
   {
     title: 'AI 聊天',
     subtitle: '多模态对话入口，快速验证创意和问题。',
@@ -62,7 +54,7 @@ const labModules: LabModule[] = [
   },
 ]
 
-const roadmap: RoadmapItem[] = [
+const roadmap = [
   {
     phase: 'Phase 01',
     title: '基础设施稳定',
@@ -84,6 +76,44 @@ const roadmap: RoadmapItem[] = [
     detail: '打磨体验与性能，扩展更多可落地的行业场景模块。',
   },
 ]
+
+const runReleaseMemory = async () => {
+  if (releasingMemory.value) return
+  maintenanceError.value = ''
+  try {
+    releasingMemory.value = true
+    const result = await chatAPI.releaseRuntimeMemory({
+      forceGc: true,
+      cleanupFiles: false
+    })
+    maintenanceResult.value = result
+  } catch (error) {
+    maintenanceError.value = '释放内存失败，请检查后端服务是否可用。'
+  } finally {
+    releasingMemory.value = false
+  }
+}
+
+const runCleanupFiles = async () => {
+  if (cleaningFiles.value) return
+  maintenanceError.value = ''
+  try {
+    cleaningFiles.value = true
+    const result = await chatAPI.cleanupExpiredFiles()
+    maintenanceResult.value = result
+  } catch (error) {
+    maintenanceError.value = '清理过期文件失败，请稍后重试。'
+  } finally {
+    cleaningFiles.value = false
+  }
+}
+
+const formatActionTime = (isoTime) => {
+  if (!isoTime) return '刚刚'
+  const date = new Date(isoTime)
+  if (Number.isNaN(date.getTime())) return '刚刚'
+  return date.toLocaleString()
+}
 </script>
 
 <template>
@@ -97,6 +127,47 @@ const roadmap: RoadmapItem[] = [
       <div class="hero-actions">
         <router-link to="/" class="btn btn-primary">返回首页</router-link>
         <router-link to="/ai-chat" class="btn btn-secondary">直接开始实验</router-link>
+      </div>
+    </section>
+
+    <section class="panel ops-panel">
+      <div class="panel-head">
+        <h2>运行维护</h2>
+        <span class="chip">Operations</span>
+      </div>
+      <p class="ops-tip">
+        可在页面内手动释放后端内存，或立即触发一次过期 PDF/图片清理，无需 SSH 登录服务器。
+      </p>
+      <div class="ops-actions">
+        <button class="btn btn-primary" :disabled="releasingMemory" @click="runReleaseMemory">
+          {{ releasingMemory ? '释放中...' : '手动释放内存' }}
+        </button>
+        <button class="btn btn-secondary" :disabled="cleaningFiles" @click="runCleanupFiles">
+          {{ cleaningFiles ? '清理中...' : '手动清理过期文件' }}
+        </button>
+      </div>
+      <p v-if="maintenanceError" class="ops-error">{{ maintenanceError }}</p>
+
+      <div v-if="maintenanceResult" class="ops-result">
+        <p class="ops-time">最近执行：{{ formatActionTime(maintenanceResult.time) }}</p>
+        <p v-if="maintenanceResult.beforeUsedMb !== undefined">
+          内存占用：{{ maintenanceResult.beforeUsedMb }}MB -> {{ maintenanceResult.afterUsedMb }}MB
+        </p>
+        <p v-if="maintenanceResult.clearedChatSessions !== undefined">
+          已清理会话内存：{{ maintenanceResult.clearedChatSessions }} 条
+        </p>
+        <p v-if="maintenanceResult.clearedHistorySessions !== undefined">
+          已清理会话历史索引：{{ maintenanceResult.clearedHistorySessions }} 条
+        </p>
+        <p v-if="maintenanceResult.clearedQuotaUsers !== undefined">
+          已清理配额计数用户：{{ maintenanceResult.clearedQuotaUsers }} 个
+        </p>
+        <p v-if="maintenanceResult.deletedPdfFiles !== undefined">
+          已删除过期 PDF：{{ maintenanceResult.deletedPdfFiles }} 个
+        </p>
+        <p v-if="maintenanceResult.deletedImageFiles !== undefined">
+          已删除过期聊天图片：{{ maintenanceResult.deletedImageFiles }} 个
+        </p>
       </div>
     </section>
 
@@ -211,6 +282,18 @@ const roadmap: RoadmapItem[] = [
   --shadow: rgba(0, 0, 0, 0.36);
 }
 
+.about-lab.dark .ops-error {
+  color: #ff9a9a;
+}
+
+.about-lab.dark .ops-result {
+  background: rgba(8, 20, 35, 0.72);
+}
+
+.about-lab.dark .ops-time {
+  color: #8ed8ff;
+}
+
 .hero {
   max-width: 920px;
   margin: 0 auto 1rem;
@@ -288,6 +371,52 @@ const roadmap: RoadmapItem[] = [
   box-shadow: 0 16px 28px var(--shadow);
   padding: clamp(0.95rem, 2vw, 1.2rem);
   backdrop-filter: blur(9px);
+}
+
+.ops-tip {
+  color: var(--text-sub);
+  line-height: 1.55;
+}
+
+.ops-actions {
+  margin-top: 0.7rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.ops-actions .btn {
+  border: none;
+  cursor: pointer;
+}
+
+.ops-actions .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.ops-error {
+  margin-top: 0.55rem;
+  color: #d13f3f;
+  font-weight: 600;
+}
+
+.ops-result {
+  margin-top: 0.7rem;
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 0.7rem 0.78rem;
+  background: rgba(255, 255, 255, 0.44);
+}
+
+.ops-result p + p {
+  margin-top: 0.35rem;
+}
+
+.ops-time {
+  color: #2a7395;
+  font-weight: 600;
 }
 
 .panel-head {
