@@ -211,6 +211,18 @@ const getMediaDuration = (file) => {
 const handleFileUpload = async (event) => {
   const files = Array.from(event.target.files || [])
   if (!files.length) return
+
+  const hasAudioOrVideo = files.some(file => {
+    const type = file.type.split('/')[0]
+    return type === 'audio' || type === 'video'
+  })
+
+  if (hasAudioOrVideo) {
+    alert('音频/视频不开放，没钱了，省着点用！')
+    event.target.value = ''
+    selectedFiles.value = []
+    return
+  }
   
   // 检查所有文件类型是否一致
   const firstFileType = files[0].type.split('/')[0]
@@ -836,4 +848,4 @@ onMounted(() => {
     }
   }
 }
-</style> 
+</style>
