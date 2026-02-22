@@ -79,7 +79,8 @@
 
             <textarea
               v-model="userInput"
-              @keydown.enter.prevent="sendMessage"
+              @keydown="handleInputKeydown"
+              @input="adjustTextareaHeight"
               :placeholder="getPlaceholder()"
               rows="1"
               ref="inputRef"
@@ -99,7 +100,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, computed } from 'vue'
+import { ref, onMounted, onBeforeUnmount, nextTick, computed } from 'vue'
 import { useDark } from '@vueuse/core'
 import { 
   ChatBubbleLeftRightIcon, 
@@ -128,15 +129,14 @@ const currentChatLabel = computed(() => {
 })
 const messageCount = computed(() => currentMessages.value.length)
 
+const IMAGE_PLACEHOLDER_TEXT = '[图片]'
+
 // 自动调整输入框高度
 const adjustTextareaHeight = () => {
   const textarea = inputRef.value
-  if (textarea) {
-    textarea.style.height = 'auto'
-    textarea.style.height = textarea.scrollHeight + 'px'
-  }else{
-    textarea.style.height = '50px'
-  }
+  if (!textarea) return
+  textarea.style.height = 'auto'
+  textarea.style.height = `${textarea.scrollHeight}px`
 }
 
 // 滚动到底部
@@ -146,6 +146,26 @@ const scrollToBottom = async () => {
     messagesRef.value.scrollTop = messagesRef.value.scrollHeight
   }
 }
+
+// 仅释放前端本地预览生成的 blob URL，避免聊天页长时间使用导致内存泄漏。
+const releaseMessageFileUrls = (messages) => {
+  messages.forEach((message) => {
+    if (!Array.isArray(message?.files)) return
+    message.files.forEach((file) => {
+      if (typeof file?.url === 'string' && file.url.startsWith('blob:')) {
+        URL.revokeObjectURL(file.url)
+      }
+    })
+  })
+}
+
+// 统一把 File 转成消息展示对象，便于即时渲染和后续提交。
+const createMessageFilePreview = (file) => ({
+  name: file.name,
+  size: file.size,
+  type: file.type,
+  url: URL.createObjectURL(file)
+})
 
 // 文件类型限制
 const FILE_LIMITS = {
@@ -284,18 +304,28 @@ const getPlaceholder = () => {
   return '输入消息，可上传图片、音频或视频...'
 }
 
+const handleInputKeydown = (event) => {
+  if (event.key !== 'Enter') return
+  // Shift + Enter 保留原生换行；Enter 直接发送消息
+  if (event.shiftKey) return
+  event.preventDefault()
+  sendMessage()
+}
+
 // 修改发送消息函数
 const sendMessage = async () => {
   if (isStreaming.value) return
   if (!userInput.value.trim() && !selectedFiles.value.length) return
   
   const messageContent = userInput.value.trim()
+  const messageFiles = selectedFiles.value.map(createMessageFilePreview)
   
   // 添加用户消息
   const userMessage = {
     role: 'user',
-    content: messageContent,
-    timestamp: new Date()
+    content: messageContent || (messageFiles.length ? IMAGE_PLACEHOLDER_TEXT : ''),
+    timestamp: new Date(),
+    files: messageFiles
   }
   currentMessages.value.push(userMessage)
   
@@ -356,7 +386,9 @@ const sendMessage = async () => {
   } finally {
     isStreaming.value = false
     selectedFiles.value = [] // 清空已选文件
-    fileInput.value.value = '' // 清空文件输入
+    if (fileInput.value) {
+      fileInput.value.value = '' // 清空文件输入
+    }
     await scrollToBottom()
   }
 }
@@ -366,9 +398,12 @@ const loadChat = async (chatId) => {
   currentChatId.value = chatId
   try {
     const messages = await chatAPI.getChatMessages(chatId, 'chat')
+    // 切换会话前先清理旧会话本地 blob 预览。
+    releaseMessageFileUrls(currentMessages.value)
     currentMessages.value = messages
   } catch (error) {
     console.error('加载对话消息失败:', error)
+    releaseMessageFileUrls(currentMessages.value)
     currentMessages.value = []
   }
 }
@@ -393,6 +428,8 @@ const loadChatHistory = async () => {
 // 开始新对话
 const startNewChat = () => {
   const newChatId = Date.now().toString()
+  // 新建会话时，旧会话内可能还有未上传完成的本地预览图 URL。
+  releaseMessageFileUrls(currentMessages.value)
   currentChatId.value = newChatId
   currentMessages.value = []
   
@@ -414,7 +451,7 @@ const formatFileSize = (bytes) => {
 // 移除文件
 const removeFile = (index) => {
   selectedFiles.value = selectedFiles.value.filter((_, i) => i !== index)
-  if (selectedFiles.value.length === 0) {
+  if (selectedFiles.value.length === 0 && fileInput.value) {
     fileInput.value.value = ''  // 清空文件输入
   }
 }
@@ -422,6 +459,11 @@ const removeFile = (index) => {
 onMounted(() => {
   loadChatHistory()
   adjustTextareaHeight()
+})
+
+onBeforeUnmount(() => {
+  // 页面卸载时兜底清理，防止切页后残留 blob URL。
+  releaseMessageFileUrls(currentMessages.value)
 })
 </script>
 

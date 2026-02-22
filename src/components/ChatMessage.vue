@@ -6,14 +6,25 @@
     </div>
     <div class="content">
       <div class="text-container">
-        <button v-if="isUser" class="user-copy-button" @click="copyContent" :title="copyButtonTitle">
+        <button v-if="isUser && hasUserText" class="user-copy-button" @click="copyContent" :title="copyButtonTitle">
           <DocumentDuplicateIcon v-if="!copied" class="copy-icon" />
           <CheckIcon v-else class="copy-icon copied" />
         </button>
-        <div class="text" ref="contentRef" v-if="isUser">
+        <div class="text" ref="contentRef" v-if="isUser && hasUserText">
           {{ message.content }}
         </div>
-        <div class="text markdown-content" ref="contentRef" v-else v-html="processedContent"></div>
+        <div v-if="isUser && userImageFiles.length > 0" class="user-image-list">
+          <img
+            v-for="(file, index) in userImageFiles"
+            :key="`${file.url}-${index}`"
+            class="user-image"
+            :src="file.url"
+            :alt="file.name || 'uploaded-image'"
+            loading="lazy"
+            @click="openImagePreview(file)"
+          >
+        </div>
+        <div class="text markdown-content" ref="contentRef" v-if="!isUser" v-html="processedContent"></div>
       </div>
       <div class="message-footer" v-if="!isUser">
         <button class="copy-button" @click="copyContent" :title="copyButtonTitle">
@@ -23,10 +34,24 @@
       </div>
     </div>
   </div>
+
+  <Teleport to="body">
+    <div
+      v-if="previewImage"
+      class="image-lightbox"
+      role="dialog"
+      aria-modal="true"
+      @click.self="closeImagePreview"
+    >
+      <button class="lightbox-close" type="button" @click="closeImagePreview" aria-label="关闭图片预览">×</button>
+      <img class="lightbox-image" :src="previewImage.url" :alt="previewImage.name || 'image-preview'" />
+      <div v-if="previewImage.name" class="lightbox-caption">{{ previewImage.name }}</div>
+    </div>
+  </Teleport>
 </template>
 
 <script setup>
-import { computed, onMounted, nextTick, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, nextTick, ref, watch } from 'vue'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 import { DocumentDuplicateIcon, CheckIcon } from '@heroicons/vue/24/outline'
@@ -38,6 +63,8 @@ const contentRef = ref(null)
 const copied = ref(false)
 const copyButtonTitle = computed(() => copied.value ? '已复制' : '复制内容')
 const userAvatarUrl = ref('')
+const previewImage = ref(null)
+const previousBodyOverflow = ref('')
 const USER_AVATAR_SEED_KEY = 'spring_ai_portal_user_avatar_seed'
 
 const avatarPalettes = [
@@ -254,6 +281,36 @@ const props = defineProps({
 })
 
 const isUser = computed(() => props.message.role === 'user')
+const hasUserText = computed(() => typeof props.message.content === 'string' && props.message.content.trim().length > 0)
+const userImageFiles = computed(() => {
+  if (!isUser.value || !Array.isArray(props.message.files)) return []
+  // 兼容历史数据与本地预览数据的不同字段结构。
+  return props.message.files
+    .map(file => ({
+      ...file,
+      url: file?.url || file?.previewUrl || file?.path || ''
+    }))
+    .filter(file => typeof file.url === 'string' && file.url.length > 0)
+})
+
+const openImagePreview = (file) => {
+  if (!file?.url) return
+  previewImage.value = {
+    url: file.url,
+    name: file.name || ''
+  }
+}
+
+const closeImagePreview = () => {
+  previewImage.value = null
+}
+
+const handlePreviewKeydown = (event) => {
+  // 图片预览层打开时，支持 ESC 快速关闭。
+  if (event.key === 'Escape') {
+    closeImagePreview()
+  }
+}
 
 // 复制内容到剪贴板
 const copyContent = async () => {
@@ -296,6 +353,25 @@ onMounted(() => {
   if (!isUser.value) {
     highlightCode()
   }
+  window.addEventListener('keydown', handlePreviewKeydown)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handlePreviewKeydown)
+  if (document.body.style.overflow === 'hidden') {
+    document.body.style.overflow = previousBodyOverflow.value
+  }
+})
+
+watch(previewImage, (current) => {
+  if (typeof document === 'undefined') return
+  if (current) {
+    // 弹层展示时锁定 body 滚动，避免背景消息区跟随滚动。
+    previousBodyOverflow.value = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+  } else {
+    document.body.style.overflow = previousBodyOverflow.value
+  }
 })
 
 const formatTime = (timestamp) => {
@@ -318,6 +394,7 @@ const formatTime = (timestamp) => {
       
       .text-container {
         position: relative;
+        align-items: flex-end;
         
         .text {
           background: #f0f7ff; // 浅色背景
@@ -403,6 +480,33 @@ const formatTime = (timestamp) => {
     
     .text-container {
       position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .user-image-list {
+      width: min(360px, 70vw);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 0.5rem;
+    }
+
+    .user-image {
+      width: 100%;
+      max-height: 240px;
+      object-fit: cover;
+      border-radius: 0.75rem;
+      border: 1px solid rgba(12, 87, 148, 0.24);
+      background: #f7fbff;
+      box-shadow: 0 6px 12px rgba(11, 63, 103, 0.1);
+      cursor: zoom-in;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(11, 63, 103, 0.18);
+      }
     }
     
     .message-footer {
@@ -599,6 +703,62 @@ const formatTime = (timestamp) => {
   }
 }
 
+.image-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 2500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem 1.25rem;
+  background: rgba(12, 18, 28, 0.8);
+  backdrop-filter: blur(4px);
+}
+
+.lightbox-image {
+  max-width: min(92vw, 1280px);
+  max-height: calc(92vh - 56px);
+  width: auto;
+  height: auto;
+  border-radius: 0.85rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+}
+
+.lightbox-caption {
+  margin-top: 0.75rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #f5f8fc;
+  font-size: 0.84rem;
+  max-width: 92vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 1rem;
+  right: 1.25rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  color: #f5f8fc;
+  font-size: 1.65rem;
+  line-height: 1;
+  background: rgba(255, 255, 255, 0.16);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.26);
+  }
+}
+
 @keyframes blink {
   0%,
   100% {
@@ -640,6 +800,16 @@ const formatTime = (timestamp) => {
         .text {
           background: #1a365d; // 暗色模式下的浅蓝色背景
           color: #fff;
+        }
+
+        .user-image {
+          border-color: rgba(132, 193, 255, 0.35);
+          background: rgba(15, 40, 68, 0.7);
+          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+
+          &:hover {
+            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.35);
+          }
         }
         
         .user-copy-button {
