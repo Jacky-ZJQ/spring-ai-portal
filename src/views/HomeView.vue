@@ -2,6 +2,7 @@
 import type { Component } from 'vue'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useDark } from '@vueuse/core'
+import { preloadCoreRoutes } from '../router'
 import {
   ChatBubbleLeftRightIcon,
   HeartIcon,
@@ -175,8 +176,24 @@ const startCarousel = () => {
   }, 4000)
 }
 
+// 利用浏览器空闲时间预加载核心聊天页面，降低用户首次进入时的感知延迟。
+const scheduleCoreRoutePreload = () => {
+  const preload = () => {
+    void preloadCoreRoutes()
+  }
+
+  const requestIdle = (window as any).requestIdleCallback
+  if (typeof requestIdle === 'function') {
+    requestIdle(preload, { timeout: 1500 })
+    return
+  }
+
+  window.setTimeout(preload, 500)
+}
+
 onMounted(() => {
   startCarousel()
+  scheduleCoreRoutePreload()
 })
 
 onBeforeUnmount(() => {

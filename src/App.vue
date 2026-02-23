@@ -2,18 +2,20 @@
 import { RouterLink, RouterView } from 'vue-router'
 import { useDark, useToggle } from '@vueuse/core'
 import { SunIcon, MoonIcon } from '@heroicons/vue/24/outline'
-import { useRouter, onBeforeRouteLeave } from 'vue-router'
-import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { onBeforeUnmount, ref } from 'vue'
 
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
 const router = useRouter()
+const isRouteLoading = ref(false)
 
 // 添加全局状态来跟踪当前路由
 const currentRoute = ref(router.currentRoute.value.path)
 
 // 添加全局路由守卫
-router.beforeEach((to, from, next) => {
+const removeBeforeEachGuard = router.beforeEach((to, from, next) => {
+  isRouteLoading.value = true
   // 如果是从 ChatPDF 页面离开
   if (from.path === '/chat-pdf') {
     // 触发一个自定义事件，让 ChatPDF 组件知道要清理资源
@@ -21,6 +23,20 @@ router.beforeEach((to, from, next) => {
   }
   currentRoute.value = to.path
   next()
+})
+
+const removeAfterEachGuard = router.afterEach(() => {
+  isRouteLoading.value = false
+})
+
+const removeRouteErrorGuard = router.onError(() => {
+  isRouteLoading.value = false
+})
+
+onBeforeUnmount(() => {
+  removeBeforeEachGuard()
+  removeAfterEachGuard()
+  removeRouteErrorGuard()
 })
 </script>
 
@@ -40,6 +56,7 @@ router.beforeEach((to, from, next) => {
         <MoonIcon v-else class="icon" />
       </button>
     </nav>
+    <div v-show="isRouteLoading" class="route-loading-bar" aria-hidden="true"></div>
     <router-view v-slot="{ Component }">
       <transition name="fade" mode="out-in">
         <component :is="Component" />
@@ -195,6 +212,19 @@ body {
   }
 }
 
+.route-loading-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  z-index: 220;
+  pointer-events: none;
+  background: linear-gradient(90deg, #00a9b8 0%, #4ed6a5 30%, #2f88ff 65%, #ff8f4a 100%);
+  background-size: 220% 100%;
+  animation: routeLoadingFlow 1s linear infinite;
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease;
@@ -212,6 +242,15 @@ body {
   }
   50% {
     transform: translateY(-2px);
+  }
+}
+
+@keyframes routeLoadingFlow {
+  0% {
+    background-position: 220% 0;
+  }
+  100% {
+    background-position: -220% 0;
   }
 }
 

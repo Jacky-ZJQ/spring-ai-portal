@@ -1,35 +1,43 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+const loadHomeView = () => import('../views/HomeView.vue')
+const loadAIChatView = () => import('../views/AIChat.vue')
+const loadGameChatView = () => import('../views/GameChat.vue')
+const loadCustomerServiceView = () => import('../views/CustomerService.vue')
+const loadChatPdfView = () => import('../views/ChatPDF.vue')
+const loadComingSoonView = () => import('../views/ComingSoonView.vue')
+const loadAboutView = () => import('../views/AboutView.vue')
+
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: () => import('../views/HomeView.vue'),
+    component: loadHomeView,
   },
   {
     path: '/ai-chat',
     name: 'ai-chat',
-    component: () => import('../views/AIChat.vue'),
+    component: loadAIChatView,
   },
   {
     path: '/game',
     name: 'game',
-    component: () => import('../views/GameChat.vue'),
+    component: loadGameChatView,
   },
   {
     path: '/customer-service',
     name: 'customer-service',
-    component: () => import('../views/CustomerService.vue'),
+    component: loadCustomerServiceView,
   },
   {
     path: '/chat-pdf',
     name: 'chat-pdf',
-    component: () => import('../views/ChatPDF.vue'),
+    component: loadChatPdfView,
   },
   {
     path: '/coming-soon/:module',
     name: 'coming-soon',
-    component: () => import('../views/ComingSoonView.vue'),
+    component: loadComingSoonView,
   },
   {
     path: '/comfort-simulator',
@@ -39,7 +47,7 @@ const routes = [
   {
     path: '/about',
     name: 'about',
-    component: () => import('../views/AboutView.vue'),
+    component: loadAboutView,
   },
 ]
 
@@ -47,5 +55,17 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 })
+
+let hasPreloadedCoreRoutes = false
+
+export const preloadCoreRoutes = async () => {
+  if (hasPreloadedCoreRoutes) return
+  hasPreloadedCoreRoutes = true
+  await Promise.allSettled([
+    loadAIChatView(),
+    loadCustomerServiceView(),
+    loadChatPdfView(),
+  ])
+}
 
 export default router
