@@ -82,8 +82,8 @@ const aiApps: AppCard[] = [
   {
     id: 6,
     title: 'Skills',
-    tag: 'SKILLS',
-    description: '技能编排入口（待完善）。',
+    tag: '趋势榜 · 一键安装',
+    description: '实时追踪全球 Agent Skills 热门趋势，按分类发现能力并快速复制安装命令。',
     route: '/coming-soon/skills',
     badge: '建设中',
     icon: WrenchScrewdriverIcon,

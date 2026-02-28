@@ -52,7 +52,7 @@ const labModules = [
   },
   {
     title: 'Skills',
-    subtitle: '沉淀可复用技能，降低复杂任务交付成本。',
+    subtitle: '构建全球 Agent Skills 趋势榜，支持分类发现、详情查看与快捷安装。',
     status: '建设中',
     route: '/coming-soon/skills',
     accent: '#f59e0b',
