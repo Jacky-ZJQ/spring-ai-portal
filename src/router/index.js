@@ -6,6 +6,7 @@ const loadGameChatView = () => import('../views/GameChat.vue')
 const loadCustomerServiceView = () => import('../views/CustomerService.vue')
 const loadChatPdfView = () => import('../views/ChatPDF.vue')
 const loadComingSoonView = () => import('../views/ComingSoonView.vue')
+const loadSkillsDetailView = () => import('../views/SkillsDetailView.vue')
 const loadAboutView = () => import('../views/AboutView.vue')
 
 const routes = [
@@ -33,6 +34,11 @@ const routes = [
     path: '/chat-pdf',
     name: 'chat-pdf',
     component: loadChatPdfView,
+  },
+  {
+    path: '/coming-soon/skills/:skillId',
+    name: 'skills-detail',
+    component: loadSkillsDetailView,
   },
   {
     path: '/coming-soon/:module',
