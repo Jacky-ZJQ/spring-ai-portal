@@ -5,6 +5,7 @@ const loadAIChatView = () => import('../views/AIChat.vue')
 const loadGameChatView = () => import('../views/GameChat.vue')
 const loadCustomerServiceView = () => import('../views/CustomerService.vue')
 const loadChatPdfView = () => import('../views/ChatPDF.vue')
+const loadMcpGatewayView = () => import('../views/McpGatewayView.vue')
 const loadComingSoonView = () => import('../views/ComingSoonView.vue')
 const loadSkillsDetailView = () => import('../views/SkillsDetailView.vue')
 const loadAboutView = () => import('../views/AboutView.vue')
@@ -41,6 +42,12 @@ const routes = [
     component: loadSkillsDetailView,
   },
   {
+    // 需要放在 /coming-soon/:module 前面，否则会被通配路由匹配掉。
+    path: '/coming-soon/mcp-gateway',
+    name: 'mcp-gateway',
+    component: loadMcpGatewayView,
+  },
+  {
     path: '/coming-soon/:module',
     name: 'coming-soon',
     component: loadComingSoonView,
@@ -64,6 +71,7 @@ const router = createRouter({
 
 let hasPreloadedCoreRoutes = false
 
+// 在首页空闲时预热高频页面，减少首次点击路由时的空白等待。
 export const preloadCoreRoutes = async () => {
   if (hasPreloadedCoreRoutes) return
   hasPreloadedCoreRoutes = true
