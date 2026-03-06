@@ -48,6 +48,10 @@ const routes = [
     component: loadMcpGatewayView,
   },
   {
+    path: '/coming-soon/comfort-simulator',
+    redirect: '/coming-soon/ai-knowledge-base',
+  },
+  {
     path: '/coming-soon/:module',
     name: 'coming-soon',
     component: loadComingSoonView,
@@ -55,7 +59,7 @@ const routes = [
   {
     path: '/comfort-simulator',
     name: 'comfort-simulator',
-    redirect: '/coming-soon/comfort-simulator',
+    redirect: '/coming-soon/ai-knowledge-base',
   },
   {
     path: '/about',

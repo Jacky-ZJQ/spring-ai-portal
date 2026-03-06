@@ -152,10 +152,14 @@ const parseJsonText = <T>(text: string, fallback: T, label: string): T => {
 
 const refreshServerList = async () => {
   listLoading.value = true
+  error.value = ''
   try {
-    servers.value = await listMcpGatewayServers()
+    const list = await listMcpGatewayServers()
+    servers.value = Array.isArray(list) ? list : []
   } catch (err: any) {
-    setError(err.message || '加载服务器列表失败')
+    // 列表接口异常时降级为空数组，避免把后端 500 直接暴露给用户。
+    console.warn('加载 MCP 服务器列表失败，已回退为空列表。', err)
+    servers.value = []
   } finally {
     listLoading.value = false
   }

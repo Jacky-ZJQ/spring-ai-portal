@@ -7,7 +7,6 @@ import {
   CubeTransparentIcon,
   MagnifyingGlassIcon,
   QuestionMarkCircleIcon,
-  SparklesIcon,
   WrenchScrewdriverIcon,
 } from '@heroicons/vue/24/outline'
 import {
@@ -54,8 +53,8 @@ const featureMap: Record<string, FeatureConfig> = {
     ],
   },
   skills: {
-    title: 'Skills 趋势榜',
-    subtitle: '实时聚合全球 Agent Skills 热门趋势，支持分类发现、详情查看与快捷安装。',
+    title: 'SKILLS安装榜',
+    subtitle: '实时聚合全球 Agent Skills 热门榜单，支持分类发现、详情查看与快捷安装。',
     eta: '当前状态：建设中',
     tips: [
       '支持多分类榜单（开发、效率、数据、运营）与趋势排序',
@@ -63,14 +62,14 @@ const featureMap: Record<string, FeatureConfig> = {
       '提供快捷安装命令复制，降低技能接入门槛',
     ],
   },
-  'comfort-simulator': {
-    title: '舒适区突破器',
-    subtitle: '把目标拆解成可执行的小步实验，并持续跟踪反馈。',
+  'ai-knowledge-base': {
+    title: 'AI知识库',
+    subtitle: '沉淀并分享 AI 提示词、工作流和实战案例，让经验可检索、可复用。',
     eta: '当前状态：建设中',
     tips: [
-      '支持目标拆解、行动卡片和周期复盘',
-      '支持行为打卡与进度可视化',
-      '支持关键阻塞点识别与提醒策略',
+      '支持按主题分享 AI 提示词、工作流与实战笔记',
+      '支持把高质量经验整理成可复用的知识卡片',
+      '支持站内检索与分享链接，方便团队传播和复盘',
     ],
   },
 }
@@ -88,7 +87,7 @@ const feature = computed<FeatureConfig>(() => {
 
 const featureIcon = computed(() => {
   if (currentKey.value.includes('mcp')) return CubeTransparentIcon
-  if (currentKey.value.includes('comfort')) return SparklesIcon
+  if (currentKey.value.includes('knowledge')) return ClipboardDocumentIcon
   if (currentKey.value.includes('skills')) return WrenchScrewdriverIcon
   return WrenchScrewdriverIcon
 })

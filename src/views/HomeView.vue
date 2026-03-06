@@ -31,33 +31,33 @@ const sloganText = '练出AGI就下班'
 const aiApps: AppCard[] = [
   {
     id: 1,
-    title: 'AI 聊天',
-    tag: '多模态对话',
-    description: '文字、图片、语音统一入口，快速验证你的想法。',
-    route: '/ai-chat',
-    badge: 'Hot',
-    icon: ChatBubbleLeftRightIcon,
-    accent: '#00a9b8',
-  },
-  {
-    id: 2,
-    title: '哄哄模拟器',
-    tag: '提示工程',
-    description: '情绪互动轻松练习沟通表达，在游戏里测试你的临场反应。',
-    route: '/game',
-    badge: 'Game',
-    icon: HeartIcon,
-    accent: '#ff6b4a',
-  },
-  {
-    id: 3,
     title: '智能客服',
-    tag: 'Function Calling',
+    tag: 'Tool Calling',
     description: '星巴克咖啡课程咨询与预约，快速接入业务函数能力。',
     route: '/customer-service',
     badge: 'Live',
     icon: UserGroupIcon,
     accent: '#3bb273',
+  },
+  {
+    id: 2,
+    title: 'SKILLS安装榜',
+    tag: '趋势榜 · 一键安装',
+    description: '实时追踪全球 Agent Skills 热门趋势，按分类发现能力并快速复制安装命令。',
+    route: '/coming-soon/skills',
+    badge: 'SKILL',
+    icon: WrenchScrewdriverIcon,
+    accent: '#f59e0b',
+  },
+  {
+    id: 3,
+    title: 'MCP网关',
+    tag: 'MCP',
+    description: '解决各类业务接口(http/rpc)便捷转换为MCP协议接口而设计实现。',
+    route: '/coming-soon/mcp-gateway',
+    badge: 'MCP',
+    icon: CommandLineIcon,
+    accent: '#0ea5e9',
   },
   {
     id: 4,
@@ -71,31 +71,31 @@ const aiApps: AppCard[] = [
   },
   {
     id: 5,
-    title: 'MCP网关',
-    tag: 'MCP',
-    description: '解决各类业务接口(http/rpc)便捷转换为MCP协议接口而设计实现。',
-    route: '/coming-soon/mcp-gateway',
-    badge: 'MCP',
-    icon: CommandLineIcon,
-    accent: '#0ea5e9',
+    title: 'AI 聊天',
+    tag: '多模态对话',
+    description: '文字、图片、语音统一入口，快速验证你的想法。',
+    route: '/ai-chat',
+    badge: 'Hot',
+    icon: ChatBubbleLeftRightIcon,
+    accent: '#00a9b8',
   },
   {
     id: 6,
-    title: 'Skills安装榜',
-    tag: '趋势榜 · 一键安装',
-    description: '实时追踪全球 Agent Skills 热门趋势，按分类发现能力并快速复制安装命令。',
-    route: '/coming-soon/skills',
-    badge: 'SKILL',
-    icon: WrenchScrewdriverIcon,
-    accent: '#f59e0b',
+    title: '哄哄模拟器',
+    tag: '提示工程',
+    description: '情绪互动轻松练习沟通表达，在游戏里测试你的临场反应。',
+    route: '/game',
+    badge: 'Game',
+    icon: HeartIcon,
+    accent: '#ff6b4a',
   },
   {
     id: 7,
-    title: '舒适区突破器',
-    tag: '行为实验',
-    description: '把目标拆成小步行动，让想法从“会”变成“做”。',
-    route: '/coming-soon/comfort-simulator',
-    badge: '建设中',
+    title: 'AI知识库',
+    tag: '知识分享',
+    description: '沉淀和分享 AI 提示词、工作流与实战经验，打造可复用的知识资产。',
+    route: '/coming-soon/ai-knowledge-base',
+    badge: 'Share',
     icon: SparklesIcon,
     accent: '#efb91f',
   },
@@ -220,8 +220,8 @@ onBeforeUnmount(() => {
         </h2>
       </div>
       <div class="hero-actions">
-        <router-link to="/ai-chat" class="btn btn-primary">开始体验</router-link>
-        <router-link to="/chat-pdf" class="btn btn-secondary">打开知识库</router-link>
+        <router-link to="/customer-service" class="btn btn-primary">开始体验</router-link>
+        <router-link to="/coming-soon/ai-knowledge-base" class="btn btn-secondary">打开AI知识库</router-link>
       </div>
     </section>
 

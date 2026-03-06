@@ -23,18 +23,25 @@ const opsTipText = computed(() => {
 
 const labModules = [
   {
-    title: 'AI 聊天',
-    subtitle: '多模态对话入口，快速验证创意和问题。',
-    status: '已上线',
-    route: '/ai-chat',
-    accent: '#00a9b8',
-  },
-  {
     title: '智能客服',
     subtitle: '星巴克课程咨询与预约，覆盖业务函数调用。',
     status: '已上线',
     route: '/customer-service',
     accent: '#3bb273',
+  },
+  {
+    title: 'SKILLS安装榜',
+    subtitle: '构建全球 Agent Skills 热门榜单，支持分类发现、详情查看与快捷安装。',
+    status: '建设中',
+    route: '/coming-soon/skills',
+    accent: '#f59e0b',
+  },
+  {
+    title: 'MCP网关',
+    subtitle: '把 HTTP/RPC 接口统一暴露为 MCP 能力层。',
+    status: '建设中',
+    route: '/coming-soon/mcp-gateway',
+    accent: '#0ea5e9',
   },
   {
     title: 'ChatPDF',
@@ -44,24 +51,24 @@ const labModules = [
     accent: '#2f88ff',
   },
   {
-    title: 'MCP 网关',
-    subtitle: '把 HTTP/RPC 接口统一暴露为 MCP 能力层。',
-    status: '建设中',
-    route: '/coming-soon/mcp-gateway',
-    accent: '#0ea5e9',
+    title: 'AI 聊天',
+    subtitle: '多模态对话入口，快速验证创意和问题。',
+    status: '已上线',
+    route: '/ai-chat',
+    accent: '#00a9b8',
   },
   {
-    title: 'Skills',
-    subtitle: '构建全球 Agent Skills 趋势榜，支持分类发现、详情查看与快捷安装。',
-    status: '建设中',
-    route: '/coming-soon/skills',
-    accent: '#f59e0b',
+    title: '哄哄模拟器',
+    subtitle: '情绪互动练习沟通表达，在游戏化场景里打磨临场反应。',
+    status: '已上线',
+    route: '/game',
+    accent: '#ff6b4a',
   },
   {
-    title: '舒适区突破器',
-    subtitle: '把目标拆解为行动任务，帮助稳定执行。',
+    title: 'AI知识库',
+    subtitle: '沉淀并分享 AI 提示词、工作流和实战案例，让经验可检索、可复用。',
     status: '建设中',
-    route: '/coming-soon/comfort-simulator',
+    route: '/coming-soon/ai-knowledge-base',
     accent: '#efb91f',
   },
 ]
@@ -231,6 +238,7 @@ const formatActionTime = (isoTime) => {
         <ul class="tips">
           <li>先从 AI 聊天或智能客服开始，快速熟悉交互体验。</li>
           <li>如需知识增强，直接进入 ChatPDF 上传文档并测试检索质量。</li>
+          <li>需要沉淀可复用经验时，可在 AI知识库里分享提示词、工作流和案例。</li>
           <li>新功能优先走 `master-deploy` 分支，便于线上快速发布与回滚。</li>
           <li>线上每次发布后，至少执行健康检查、日志检查和核心流程自检。</li>
         </ul>

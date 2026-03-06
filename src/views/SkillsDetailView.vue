@@ -97,7 +97,7 @@ const openSkillDetail = (nextSkillId: string) => {
       <div class="breadcrumbs">
         <RouterLink to="/coming-soon/skills" class="back-link">
           <ArrowLeftIcon class="back-icon" />
-          返回 Skills 趋势榜
+          返回 SKILLS安装榜
         </RouterLink>
         <span class="divider">/</span>
         <span class="current">{{ skill.name }}</span>
@@ -228,7 +228,7 @@ const openSkillDetail = (nextSkillId: string) => {
     <section v-else class="not-found">
       <h1>没有找到这个 Skill</h1>
       <p>请返回趋势榜重新选择。</p>
-      <RouterLink to="/coming-soon/skills" class="not-found-link">返回 Skills 趋势榜</RouterLink>
+      <RouterLink to="/coming-soon/skills" class="not-found-link">返回 SKILLS安装榜</RouterLink>
     </section>
   </main>
 </template>
