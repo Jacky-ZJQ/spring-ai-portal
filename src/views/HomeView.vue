@@ -33,7 +33,7 @@ const aiApps: AppCard[] = [
     id: 1,
     title: '智能客服',
     tag: 'Tool Calling',
-    description: '星巴克咖啡课程咨询与预约，快速接入业务函数能力。',
+    description: '星巴克咖啡课程咨询与预约 \n Agent动态调用SpringTool查询课程、门店等。',
     route: '/customer-service',
     badge: 'Live',
     icon: UserGroupIcon,
@@ -71,6 +71,16 @@ const aiApps: AppCard[] = [
   },
   {
     id: 5,
+    title: 'AI知识库',
+    tag: '知识分享',
+    description: '沉淀和分享 AI 提示词、工作流与实战经验，打造可复用的知识资产。',
+    route: '/ai-knowledge-base',
+    badge: 'Share',
+    icon: SparklesIcon,
+    accent: '#efb91f',
+  },
+  {
+    id: 6,
     title: 'AI 聊天',
     tag: '多模态对话',
     description: '文字、图片、语音统一入口，快速验证你的想法。',
@@ -80,7 +90,7 @@ const aiApps: AppCard[] = [
     accent: '#00a9b8',
   },
   {
-    id: 6,
+    id: 7,
     title: '哄哄模拟器',
     tag: '提示工程',
     description: '情绪互动轻松练习沟通表达，在游戏里测试你的临场反应。',
@@ -88,16 +98,6 @@ const aiApps: AppCard[] = [
     badge: 'Game',
     icon: HeartIcon,
     accent: '#ff6b4a',
-  },
-  {
-    id: 7,
-    title: 'AI知识库',
-    tag: '知识分享',
-    description: '沉淀和分享 AI 提示词、工作流与实战经验，打造可复用的知识资产。',
-    route: '/coming-soon/ai-knowledge-base',
-    badge: 'Share',
-    icon: SparklesIcon,
-    accent: '#efb91f',
   },
   {
     id: 8,
@@ -108,7 +108,7 @@ const aiApps: AppCard[] = [
     badge: 'Info',
     icon: BeakerIcon,
     accent: '#7c6cff',
-  },
+  }
 ]
 
 const carouselTexts = [
@@ -221,7 +221,7 @@ onBeforeUnmount(() => {
       </div>
       <div class="hero-actions">
         <router-link to="/customer-service" class="btn btn-primary">开始体验</router-link>
-        <router-link to="/coming-soon/ai-knowledge-base" class="btn btn-secondary">打开AI知识库</router-link>
+        <router-link to="/ai-knowledge-base" class="btn btn-secondary">打开AI知识库</router-link>
       </div>
     </section>
 

@@ -1,0 +1,20 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="900" rx="48" fill="#EAF8F4"/>
+  <rect x="48" y="48" width="1504" height="804" rx="40" fill="url(#bg)"/>
+  <circle cx="1340" cy="220" r="180" fill="#7DE2C9" fill-opacity="0.28"/>
+  <circle cx="1180" cy="700" r="260" fill="#4A8BFF" fill-opacity="0.18"/>
+  <rect x="132" y="148" width="228" height="48" rx="24" fill="#FFFFFF" fill-opacity="0.72"/>
+  <text x="160" y="180" fill="#118E77" font-family="Avenir, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="4">SPRING AI</text>
+  <text x="132" y="360" fill="#10233D" font-family="Avenir, Arial, sans-serif" font-size="108" font-weight="700">Knowledge</text>
+  <text x="132" y="468" fill="#10233D" font-family="Avenir, Arial, sans-serif" font-size="108" font-weight="700">Wiring</text>
+  <text x="136" y="576" fill="#587084" font-family="Avenir, Arial, sans-serif" font-size="34">Routes, APIs, list sync and detail rendering</text>
+  <rect x="132" y="646" width="306" height="96" rx="28" fill="#FFFFFF" fill-opacity="0.54"/>
+  <text x="170" y="704" fill="#10233D" font-family="Avenir, Arial, sans-serif" font-size="40" font-weight="700">Portal Notes</text>
+  <defs>
+    <linearGradient id="bg" x1="120" y1="72" x2="1478" y2="828" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F7FFFC"/>
+      <stop offset="0.5" stop-color="#EFF7FF"/>
+      <stop offset="1" stop-color="#FDF8EF"/>
+    </linearGradient>
+  </defs>
+</svg>

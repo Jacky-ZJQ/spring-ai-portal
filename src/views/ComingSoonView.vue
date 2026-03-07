@@ -25,11 +25,37 @@ interface FeatureConfig {
   tips: string[]
 }
 
+interface KnowledgeCategory {
+  id: string
+  label: string
+  description: string
+}
+
+interface KnowledgeView {
+  id: string
+  label: string
+  description: string
+}
+
+interface KnowledgeEntry {
+  id: string
+  title: string
+  type: string
+  source: string
+  status: string
+  excerpt: string
+  note: string
+  updatedAt: string
+  tags: string[]
+  recent?: boolean
+}
+
 const route = useRoute()
 const router = useRouter()
 
 const currentKey = computed(() => String(route.params.module || '').toLowerCase())
 const isSkillsPage = computed(() => currentKey.value === 'skills')
+const isKnowledgeBasePage = computed(() => currentKey.value === 'ai-knowledge-base')
 
 const featureMap: Record<string, FeatureConfig> = {
   'mcp-gateway': {
@@ -91,6 +117,239 @@ const featureIcon = computed(() => {
   if (currentKey.value.includes('skills')) return WrenchScrewdriverIcon
   return WrenchScrewdriverIcon
 })
+
+const knowledgeViews: KnowledgeView[] = [
+  { id: 'all', label: '全部条目', description: '查看所有笔记和资料' },
+  { id: 'recent', label: '最近新增', description: '优先回看最近补充的内容' },
+  { id: 'draft', label: '待整理', description: '还没写完结论和注释的条目' },
+  { id: 'shared', label: '已分享', description: '已经对外输出过的内容' },
+  { id: 'video', label: '视频清单', description: '单独看视频和演讲资料' },
+  { id: 'prompt', label: 'Prompt Cards', description: '整理好的 Prompt 条目' },
+]
+
+const knowledgeCategories: KnowledgeCategory[] = [
+  { id: 'all', label: '全部', description: '浏览全部资料类型' },
+  { id: 'article', label: '文章', description: '文章和博客链接' },
+  { id: 'video', label: '视频', description: '视频和公开课笔记' },
+  { id: 'prompt', label: 'Prompt', description: '可复用的提示词条目' },
+  { id: 'tool', label: '工具', description: '工具、仓库和参考实现' },
+  { id: 'note', label: '笔记', description: '自己的补充想法和短札记' },
+]
+
+const knowledgeEntries: KnowledgeEntry[] = [
+  {
+    id: 'article-effective-agents',
+    title: 'Building Effective AI Agents',
+    type: 'article',
+    source: 'Anthropic',
+    status: 'shared',
+    excerpt: '这篇文章真正有价值的不是“怎么做 agent”，而是它把适用边界说清楚了，适合拿来统一团队认知。',
+    note: '值得继续整理成一张“适合 / 不适合上 agent”的内部判断卡。',
+    updatedAt: '03/07',
+    tags: ['Agents', '架构', '边界判断'],
+    recent: true,
+  },
+  {
+    id: 'video-rag-pipeline',
+    title: 'How to Build a RAG Pipeline That Actually Works',
+    type: 'video',
+    source: 'YouTube',
+    status: 'draft',
+    excerpt: '视频里最值得记的不是 demo，而是 chunking、retrieval 和调参那一段，适合拆成排障清单。',
+    note: '后续补成 checklist，重点写“召回正常但回答很差”的几种情况。',
+    updatedAt: '03/06',
+    tags: ['RAG', '调优', '排障'],
+    recent: true,
+  },
+  {
+    id: 'prompt-knowledge-card',
+    title: '把零散素材整理成可分享知识卡的 Prompt',
+    type: 'prompt',
+    source: 'Personal Note',
+    status: 'shared',
+    excerpt: '这是我反复用过的整理模板，适合把文章、聊天记录和视频笔记压缩成一张可读卡片。',
+    note: '下一版需要补“适用对象 / 不适合场景 / 推荐模型”三个字段。',
+    updatedAt: '03/05',
+    tags: ['Prompt', '知识整理', '复用'],
+    recent: true,
+  },
+  {
+    id: 'tool-notes-library',
+    title: '一个适合做个人 AI 收藏库的开源项目',
+    type: 'tool',
+    source: 'GitHub',
+    status: 'review',
+    excerpt: '我关心的不是功能多不多，而是它的最小模型够不够顺手：链接、标签、摘要、个人注释。',
+    note: '适合做首版参考实现，重点看录入流程是否足够短。',
+    updatedAt: '03/03',
+    tags: ['MVP', '收藏系统', '参考实现'],
+  },
+  {
+    id: 'article-model-routing',
+    title: '多模型路由配置的几种稳定写法',
+    type: 'article',
+    source: 'Platform Blog',
+    status: 'draft',
+    excerpt: '这篇更适合当内部基线资料，重点不是模型评测结论，而是如何把成本、质量和上下文长度拆开配置。',
+    note: '准备补一张“任务类型 -> 模型选择”表格，方便后面复用。',
+    updatedAt: '03/02',
+    tags: ['模型路由', '成本控制', '配置'],
+  },
+  {
+    id: 'note-sharing-outline',
+    title: '每条手札都应该有“我的结论”',
+    type: 'note',
+    source: 'Personal Note',
+    status: 'shared',
+    excerpt: '如果只有原文链接和摘要，这条内容还是别人的，不是我的知识资产。',
+    note: '后面所有资料条目都要补一段“我的结论”或“为什么值得存”。',
+    updatedAt: '03/01',
+    tags: ['分享', '写作', '个人沉淀'],
+  },
+  {
+    id: 'video-ai-notes-system',
+    title: 'How I Organize Research Notes for AI Projects',
+    type: 'video',
+    source: 'YouTube',
+    status: 'review',
+    excerpt: '适合参考它的笔记结构，而不是照搬工具本身。真正值得学的是分类方式和回看路径。',
+    note: '后续可以把里面的索引设计拆成自己的资料库侧边栏结构。',
+    updatedAt: '02/28',
+    tags: ['笔记系统', '工作流', '知识管理'],
+  },
+]
+
+const knowledgeQuickNotes = [
+  '先做最短录入链路，不然收藏很快会堆成“稍后整理”。',
+  '每条链接至少留一句“为什么存它”，否则它只是书签，不是笔记。',
+  '分享页应该从数据库视图里一键生成，而不是单独再维护一套内容。',
+]
+
+const knowledgeKeywordInput = ref('')
+const knowledgeKeyword = ref('')
+const activeKnowledgeView = ref('all')
+const activeKnowledgeCategory = ref('all')
+
+const formatKnowledgeType = (typeId: string) =>
+  knowledgeCategories.find((item) => item.id === typeId)?.label || typeId
+
+const formatKnowledgeStatus = (status: string) => {
+  if (status === 'shared') return '已分享'
+  if (status === 'draft') return '待整理'
+  if (status === 'review') return '待评估'
+  return status
+}
+
+const matchesKnowledgeView = (entry: KnowledgeEntry, viewId: string) => {
+  if (viewId === 'recent') return Boolean(entry.recent)
+  if (viewId === 'draft') return entry.status === 'draft'
+  if (viewId === 'shared') return entry.status === 'shared'
+  if (viewId === 'video') return entry.type === 'video'
+  if (viewId === 'prompt') return entry.type === 'prompt'
+  return true
+}
+
+const knowledgeViewOptions = computed(() =>
+  knowledgeViews.map((view) => ({
+    ...view,
+    count: knowledgeEntries.filter((entry) => matchesKnowledgeView(entry, view.id)).length,
+  }))
+)
+
+const knowledgeCategoryOptions = computed(() =>
+  knowledgeCategories.map((category) => ({
+    ...category,
+    count:
+      category.id === 'all'
+        ? knowledgeEntries.filter((entry) => matchesKnowledgeView(entry, activeKnowledgeView.value)).length
+        : knowledgeEntries.filter(
+            (entry) => matchesKnowledgeView(entry, activeKnowledgeView.value) && entry.type === category.id
+          ).length,
+  }))
+)
+
+const knowledgeTopTags = computed(() => {
+  const tagCountMap = new Map<string, number>()
+
+  knowledgeEntries.forEach((entry) => {
+    entry.tags.forEach((tag) => {
+      tagCountMap.set(tag, (tagCountMap.get(tag) || 0) + 1)
+    })
+  })
+
+  return [...tagCountMap.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'zh-CN'))
+    .slice(0, 7)
+    .map(([label]) => label)
+})
+
+const knowledgeStats = computed(() => [
+  {
+    label: '总条目',
+    value: String(knowledgeEntries.length),
+    description: '文章、视频、Prompt、工具和个人短札都在同一套结构里。',
+  },
+  {
+    label: '已分享',
+    value: String(knowledgeEntries.filter((item) => item.status === 'shared').length),
+    description: '已经整理到可以直接复用或对外分享的条目。',
+  },
+  {
+    label: '待整理',
+    value: String(knowledgeEntries.filter((item) => item.status === 'draft').length),
+    description: '先收进去，等有时间再补“我的结论”和适用场景。',
+  },
+  {
+    label: '高频标签',
+    value: String(knowledgeTopTags.value.length),
+    description: '先从少数高频主题切入，避免知识库一开始就散掉。',
+  },
+])
+
+const filteredKnowledgeEntries = computed(() => {
+  const normalizedKeyword = knowledgeKeyword.value.trim().toLowerCase()
+
+  return knowledgeEntries.filter((entry) => {
+    const matchesView = matchesKnowledgeView(entry, activeKnowledgeView.value)
+    const matchesCategory = activeKnowledgeCategory.value === 'all' || entry.type === activeKnowledgeCategory.value
+
+    if (!matchesView || !matchesCategory) {
+      return false
+    }
+
+    if (!normalizedKeyword) {
+      return true
+    }
+
+    const searchableText = [
+      entry.title,
+      entry.source,
+      entry.excerpt,
+      entry.note,
+      formatKnowledgeType(entry.type),
+      ...entry.tags,
+    ]
+      .join(' ')
+      .toLowerCase()
+
+    return searchableText.includes(normalizedKeyword)
+  })
+})
+
+const knowledgeVisibleSummary = computed(
+  () => `当前显示 ${filteredKnowledgeEntries.value.length} 条，已收录 ${knowledgeEntries.length} 条。`
+)
+
+const applyKnowledgeSearch = () => {
+  knowledgeKeyword.value = knowledgeKeywordInput.value.trim()
+}
+
+const resetKnowledgeFilters = () => {
+  knowledgeKeywordInput.value = ''
+  knowledgeKeyword.value = ''
+  activeKnowledgeView.value = 'all'
+  activeKnowledgeCategory.value = 'all'
+}
 
 const keywordInput = ref('')
 const keyword = ref('')
@@ -202,7 +461,7 @@ const copyInstallCommand = async (skill: SkillItem) => {
 </script>
 
 <template>
-  <main class="coming-soon-page" :class="{ 'skills-mode': isSkillsPage }">
+  <main class="coming-soon-page" :class="{ 'skills-mode': isSkillsPage, 'knowledge-mode': isKnowledgeBasePage }">
     <section v-if="isSkillsPage" class="skills-panel">
       <header class="skills-hero">
         <div class="skills-hero-top">
@@ -314,6 +573,167 @@ const copyInstallCommand = async (skill: SkillItem) => {
           </article>
         </div>
       </section>
+    </section>
+
+    <section v-else-if="isKnowledgeBasePage" class="knowledge-page">
+      <div class="knowledge-shell">
+        <aside class="knowledge-sidebar">
+          <div class="knowledge-brand">
+            <div class="knowledge-brand-head">
+              <h1>AI Notes</h1>
+              <span class="knowledge-brand-badge">J</span>
+            </div>
+            <p>像 Obsidian / Notion 一样管理链接、视频、Prompt 和自己的阅读备注。</p>
+          </div>
+
+          <section class="knowledge-sidebar-group">
+            <p class="knowledge-sidebar-label">Views</p>
+            <div class="knowledge-view-list">
+              <button
+                v-for="view in knowledgeViewOptions"
+                :key="view.id"
+                type="button"
+                class="knowledge-view-item"
+                :class="{ active: activeKnowledgeView === view.id }"
+                @click="activeKnowledgeView = view.id"
+              >
+                <span>{{ view.label }}</span>
+                <span class="knowledge-view-count">{{ view.count }}</span>
+              </button>
+            </div>
+          </section>
+
+          <section class="knowledge-sidebar-group">
+            <p class="knowledge-sidebar-label">Tags</p>
+            <div class="knowledge-tag-cloud">
+              <button
+                v-for="tag in knowledgeTopTags"
+                :key="tag"
+                type="button"
+                class="knowledge-tag-chip"
+                @click="knowledgeKeywordInput = tag; knowledgeKeyword = tag"
+              >
+                {{ tag }}
+              </button>
+            </div>
+          </section>
+
+          <section class="knowledge-sidebar-group">
+            <p class="knowledge-sidebar-label">Quick Notes</p>
+            <ul class="knowledge-note-list">
+              <li v-for="note in knowledgeQuickNotes" :key="note">{{ note }}</li>
+            </ul>
+          </section>
+        </aside>
+
+        <div class="knowledge-main">
+          <div class="knowledge-topbar">
+            <div class="knowledge-search">
+              <MagnifyingGlassIcon class="knowledge-search-icon" />
+              <input
+                v-model="knowledgeKeywordInput"
+                type="text"
+                placeholder="搜索标题、域名、标签、我的备注"
+                aria-label="搜索知识库"
+                @keydown.enter.prevent="applyKnowledgeSearch"
+              />
+              <button type="button" class="knowledge-top-button subtle" @click="applyKnowledgeSearch">搜索</button>
+              <button
+                v-if="knowledgeKeyword || activeKnowledgeCategory !== 'all' || activeKnowledgeView !== 'all'"
+                type="button"
+                class="knowledge-top-button subtle"
+                @click="resetKnowledgeFilters"
+              >
+                重置
+              </button>
+            </div>
+
+            <div class="knowledge-top-actions">
+              <button type="button" class="knowledge-top-button subtle">筛选</button>
+              <button type="button" class="knowledge-top-button subtle">排序</button>
+              <button type="button" class="knowledge-top-button primary">+ 新增笔记</button>
+            </div>
+          </div>
+
+          <header class="knowledge-header">
+            <p class="knowledge-header-eyebrow">Notes Database</p>
+            <h2>一个更像数据库的 AI 资料库</h2>
+            <p>
+              重点不是做花哨首页，而是把文章、视频、Prompt、工具链接和你的注释装进一个长期可维护的结构里。像 Notion 的数据库视图，像
+              Obsidian 的阅读笔记。
+            </p>
+          </header>
+
+          <div class="knowledge-stat-grid">
+            <article v-for="stat in knowledgeStats" :key="stat.label" class="knowledge-stat-card">
+              <strong>{{ stat.value }}</strong>
+              <span>{{ stat.label }}</span>
+              <p>{{ stat.description }}</p>
+            </article>
+          </div>
+
+          <section class="knowledge-toolbar">
+            <div class="knowledge-toolbar-top">
+              <div>
+                <h3>资料库视图</h3>
+                <p>按类型、状态、标签和时间过滤，结构清晰，录入成本低。</p>
+              </div>
+              <p class="knowledge-toolbar-summary">{{ knowledgeVisibleSummary }}</p>
+            </div>
+
+            <div class="knowledge-chip-row">
+              <button
+                v-for="category in knowledgeCategoryOptions"
+                :key="category.id"
+                type="button"
+                class="knowledge-filter-chip"
+                :class="{ active: activeKnowledgeCategory === category.id }"
+                @click="activeKnowledgeCategory = category.id"
+              >
+                <span>{{ category.label }}</span>
+                <small>{{ category.count }}</small>
+              </button>
+            </div>
+          </section>
+
+          <section class="knowledge-database">
+            <div class="knowledge-database-head">
+              <div>Title</div>
+              <div>Type</div>
+              <div>Status</div>
+              <div>Tags</div>
+              <div>My Note</div>
+              <div>Updated</div>
+            </div>
+
+            <article v-for="entry in filteredKnowledgeEntries" :key="entry.id" class="knowledge-database-row">
+              <div class="knowledge-database-cell knowledge-title-cell" data-label="Title">
+                <strong>{{ entry.title }}</strong>
+                <p>{{ entry.source }} · {{ entry.excerpt }}</p>
+              </div>
+
+              <div class="knowledge-database-cell" data-label="Type">
+                <span class="knowledge-pill" :class="`type-${entry.type}`">{{ formatKnowledgeType(entry.type) }}</span>
+              </div>
+
+              <div class="knowledge-database-cell" data-label="Status">
+                <span class="knowledge-pill" :class="`status-${entry.status}`">{{ formatKnowledgeStatus(entry.status) }}</span>
+              </div>
+
+              <div class="knowledge-database-cell" data-label="Tags">{{ entry.tags.join(', ') }}</div>
+
+              <div class="knowledge-database-cell knowledge-note-cell" data-label="My Note">{{ entry.note }}</div>
+
+              <div class="knowledge-database-cell knowledge-database-small" data-label="Updated">{{ entry.updatedAt }}</div>
+            </article>
+
+            <div v-if="!filteredKnowledgeEntries.length" class="empty-state knowledge-empty">
+              <h3>当前没有匹配的条目</h3>
+              <p>可以先切回“全部”，或者换一个更通用的关键词。</p>
+            </div>
+          </section>
+        </div>
+      </div>
     </section>
 
     <section v-else class="panel">
@@ -1067,6 +1487,430 @@ const copyInstallCommand = async (skill: SkillItem) => {
   font-size: 0.95rem;
 }
 
+.coming-soon-page.knowledge-mode {
+  display: block;
+  padding: clamp(1rem, 2.2vw, 1.8rem);
+}
+
+.knowledge-page {
+  width: min(1360px, 100%);
+  margin: 0 auto;
+}
+
+.knowledge-shell {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  min-height: calc(100vh - 112px);
+  border-radius: 1.75rem;
+  border: 1px solid rgba(20, 34, 48, 0.08);
+  background: rgba(250, 250, 248, 0.9);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+}
+
+.knowledge-sidebar {
+  padding: 1.5rem 1.1rem;
+  border-right: 1px solid rgba(20, 34, 48, 0.08);
+  background: rgba(248, 248, 246, 0.92);
+}
+
+.knowledge-main {
+  padding: 1.5rem 1.6rem 1.75rem;
+}
+
+.knowledge-brand-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.knowledge-brand h1 {
+  margin: 0;
+  color: #1a2432;
+  font-size: 1.3rem;
+  letter-spacing: -0.03em;
+}
+
+.knowledge-brand p {
+  margin: 0.55rem 0 0;
+  color: #657386;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.knowledge-brand-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 0.68rem;
+  background: #1f2937;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.knowledge-sidebar-group + .knowledge-sidebar-group {
+  margin-top: 1.6rem;
+}
+
+.knowledge-sidebar-label,
+.knowledge-header-eyebrow {
+  margin: 0 0 0.8rem;
+  color: #8b95a7;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.knowledge-view-list,
+.knowledge-note-list {
+  display: grid;
+  gap: 0.32rem;
+}
+
+.knowledge-view-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  border: 0;
+  border-radius: 0.85rem;
+  background: transparent;
+  padding: 0.7rem 0.75rem;
+  color: #445162;
+  font-size: 0.9rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.knowledge-view-item.active {
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(20, 34, 48, 0.08);
+  color: #1a2432;
+  font-weight: 600;
+}
+
+.knowledge-view-count {
+  color: #97a1b0;
+  font-size: 0.76rem;
+}
+
+.knowledge-tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.knowledge-tag-chip {
+  border: 1px solid rgba(20, 34, 48, 0.08);
+  border-radius: 999px;
+  background: #fff;
+  padding: 0.42rem 0.68rem;
+  color: #536173;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.knowledge-note-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.knowledge-note-list li {
+  color: #566375;
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+
+.knowledge-topbar,
+.knowledge-toolbar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.knowledge-search {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  max-width: 32rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(20, 34, 48, 0.08);
+  background: #fff;
+}
+
+.knowledge-search-icon {
+  width: 1rem;
+  height: 1rem;
+  color: #8b95a7;
+  flex-shrink: 0;
+}
+
+.knowledge-search input {
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: #1b2a3b;
+  font-size: 0.9rem;
+}
+
+.knowledge-top-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.knowledge-top-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.78rem;
+  padding: 0.68rem 0.92rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: 1px solid rgba(20, 34, 48, 0.08);
+  background: #fff;
+  color: #213042;
+  cursor: pointer;
+}
+
+.knowledge-top-button.primary {
+  background: #1f2937;
+  border-color: transparent;
+  color: #fff;
+}
+
+.knowledge-header {
+  margin-top: 1.35rem;
+}
+
+.knowledge-header h2 {
+  margin: 0;
+  color: #162131;
+  font-size: clamp(2rem, 3vw, 2.75rem);
+  line-height: 1.05;
+  letter-spacing: -0.05em;
+}
+
+.knowledge-header p {
+  margin: 0.7rem 0 0;
+  max-width: 45rem;
+  color: #66758a;
+  font-size: 0.96rem;
+  line-height: 1.72;
+}
+
+.knowledge-stat-grid {
+  margin-top: 1.2rem;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.knowledge-stat-card {
+  border: 1px solid rgba(20, 34, 48, 0.08);
+  border-radius: 1.1rem;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 1rem;
+}
+
+.knowledge-stat-card strong {
+  display: block;
+  color: #1b2a3b;
+  font-size: 1.7rem;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.knowledge-stat-card span {
+  display: block;
+  margin-top: 0.35rem;
+  color: #4f5f73;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.knowledge-stat-card p {
+  margin: 0.38rem 0 0;
+  color: #7d8898;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.knowledge-toolbar {
+  margin-top: 1.25rem;
+}
+
+.knowledge-toolbar h3 {
+  margin: 0;
+  color: #1b293b;
+  font-size: 1.18rem;
+  letter-spacing: -0.03em;
+}
+
+.knowledge-toolbar p {
+  margin: 0.3rem 0 0;
+  color: #69778b;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.knowledge-toolbar-summary {
+  margin: 0 !important;
+  color: #8893a3 !important;
+  white-space: nowrap;
+}
+
+.knowledge-chip-row {
+  margin-top: 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.knowledge-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 0;
+  border-radius: 999px;
+  background: #eef2f6;
+  padding: 0.5rem 0.78rem;
+  color: #596779;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.knowledge-filter-chip small {
+  color: #8e99a8;
+  font-size: 0.72rem;
+}
+
+.knowledge-filter-chip.active {
+  background: #1f2937;
+  color: #fff;
+}
+
+.knowledge-filter-chip.active small {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.knowledge-database {
+  margin-top: 1rem;
+  border: 1px solid rgba(20, 34, 48, 0.08);
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.82);
+  overflow: hidden;
+}
+
+.knowledge-database-head,
+.knowledge-database-row {
+  display: grid;
+  grid-template-columns: 2.1fr 0.8fr 0.8fr 1.1fr 1fr 0.8fr;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.knowledge-database-head {
+  padding: 1rem 1.1rem;
+  background: rgba(248, 249, 251, 0.84);
+  border-bottom: 1px solid rgba(20, 34, 48, 0.08);
+  color: #8b95a7;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.knowledge-database-row {
+  padding: 1rem 1.1rem;
+  border-bottom: 1px solid rgba(20, 34, 48, 0.06);
+}
+
+.knowledge-database-row:last-of-type {
+  border-bottom: 0;
+}
+
+.knowledge-database-cell {
+  color: #4f5f73;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  min-width: 0;
+}
+
+.knowledge-title-cell strong {
+  display: block;
+  color: #1c2a3b;
+  font-size: 0.96rem;
+}
+
+.knowledge-title-cell p {
+  margin: 0.35rem 0 0;
+  color: #67758a;
+}
+
+.knowledge-note-cell,
+.knowledge-database-small {
+  color: #66758a;
+}
+
+.knowledge-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.35rem 0.62rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.knowledge-pill.type-article,
+.knowledge-pill.type-tool {
+  background: rgba(38, 116, 255, 0.12);
+  color: #2674ff;
+}
+
+.knowledge-pill.type-video {
+  background: rgba(183, 129, 37, 0.14);
+  color: #b78125;
+}
+
+.knowledge-pill.type-prompt {
+  background: rgba(28, 140, 104, 0.14);
+  color: #1c8c68;
+}
+
+.knowledge-pill.type-note {
+  background: rgba(123, 97, 255, 0.12);
+  color: #6a5bd3;
+}
+
+.knowledge-pill.status-shared,
+.knowledge-pill.status-review,
+.knowledge-pill.status-draft {
+  background: #f3f4f6;
+  color: #667085;
+}
+
+.knowledge-empty {
+  margin: 0;
+  border-radius: 0;
+  border: 0;
+  background: transparent;
+  padding: 1.4rem 1.1rem;
+  text-align: left;
+}
+
 .panel {
   width: min(860px, 100%);
   padding: 2rem;
@@ -1155,11 +1999,42 @@ const copyInstallCommand = async (skill: SkillItem) => {
   .skills-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .knowledge-shell {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
 }
 
 @media (max-width: 900px) {
   .skills-list {
     grid-template-columns: 1fr;
+  }
+
+  .knowledge-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .knowledge-sidebar {
+    border-right: 0;
+    border-bottom: 1px solid rgba(20, 34, 48, 0.08);
+  }
+
+  .knowledge-topbar,
+  .knowledge-toolbar-top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .knowledge-search {
+    max-width: none;
+  }
+
+  .knowledge-top-actions {
+    justify-content: flex-end;
+  }
+
+  .knowledge-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .faq-grid {
@@ -1175,6 +2050,61 @@ const copyInstallCommand = async (skill: SkillItem) => {
 @media (max-width: 760px) {
   .skills-panel {
     padding: 0.72rem;
+  }
+
+  .coming-soon-page.knowledge-mode {
+    padding: 0.9rem;
+  }
+
+  .knowledge-main,
+  .knowledge-sidebar {
+    padding: 1rem;
+  }
+
+  .knowledge-shell {
+    border-radius: 1.2rem;
+  }
+
+  .knowledge-search {
+    flex-wrap: wrap;
+  }
+
+  .knowledge-search input {
+    min-width: 100%;
+    order: 0;
+  }
+
+  .knowledge-top-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .knowledge-top-button {
+    flex: 1;
+  }
+
+  .knowledge-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .knowledge-database-head {
+    display: none;
+  }
+
+  .knowledge-database-row {
+    grid-template-columns: 1fr;
+    gap: 0.55rem;
+  }
+
+  .knowledge-database-cell::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 0.18rem;
+    color: #8b95a7;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
   .search-wrap {
@@ -1207,6 +2137,17 @@ const copyInstallCommand = async (skill: SkillItem) => {
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.32);
 }
 
+:global(.dark) .knowledge-shell {
+  background: rgba(13, 22, 34, 0.82);
+  border-color: rgba(177, 220, 255, 0.14);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.32);
+}
+
+:global(.dark) .knowledge-sidebar {
+  background: rgba(11, 19, 30, 0.86);
+  border-color: rgba(177, 220, 255, 0.14);
+}
+
 :global(.dark) .skills-hero,
 :global(.dark) .skill-card,
 :global(.dark) .skill-detail,
@@ -1215,12 +2156,26 @@ const copyInstallCommand = async (skill: SkillItem) => {
 :global(.dark) .scenario-box,
 :global(.dark) .recommend-box,
 :global(.dark) .faq-section,
-:global(.dark) .faq-card {
+  :global(.dark) .faq-card {
   background: rgba(14, 26, 40, 0.84);
   border-color: rgba(177, 220, 255, 0.2);
 }
 
+:global(.dark) .knowledge-stat-card,
+:global(.dark) .knowledge-database,
+:global(.dark) .knowledge-tag-chip,
+:global(.dark) .knowledge-search,
+:global(.dark) .knowledge-top-button,
+:global(.dark) .knowledge-view-item.active {
+  background: rgba(14, 26, 40, 0.84);
+  border-color: rgba(177, 220, 255, 0.18);
+}
+
 :global(.dark) .skills-hero h1,
+:global(.dark) .knowledge-brand h1,
+:global(.dark) .knowledge-header h2,
+:global(.dark) .knowledge-toolbar h3,
+:global(.dark) .knowledge-title-cell strong,
 :global(.dark) .skill-card-head h2,
 :global(.dark) .detail-head h2,
 :global(.dark) .install-box h3,
@@ -1241,7 +2196,22 @@ const copyInstallCommand = async (skill: SkillItem) => {
   color: #9eb8d2;
 }
 
+:global(.dark) .knowledge-sidebar-label,
+:global(.dark) .knowledge-header-eyebrow,
+:global(.dark) .knowledge-view-count,
+:global(.dark) .knowledge-toolbar-summary,
+:global(.dark) .knowledge-filter-chip small {
+  color: #9eb8d2;
+}
+
 :global(.dark) .refresh,
+:global(.dark) .knowledge-brand p,
+:global(.dark) .knowledge-note-list li,
+:global(.dark) .knowledge-header p,
+:global(.dark) .knowledge-stat-card p,
+:global(.dark) .knowledge-toolbar p,
+:global(.dark) .knowledge-database-cell,
+:global(.dark) .knowledge-title-cell p,
 :global(.dark) .skills-subtitle,
 :global(.dark) .skills-summary,
 :global(.dark) .skill-summary,
@@ -1266,6 +2236,11 @@ const copyInstallCommand = async (skill: SkillItem) => {
 
 :global(.dark) .search-wrap input,
 :global(.dark) .command-row code,
+:global(.dark) .knowledge-search input,
+:global(.dark) .knowledge-view-item,
+:global(.dark) .knowledge-tag-chip,
+:global(.dark) .knowledge-top-button,
+:global(.dark) .knowledge-filter-chip,
 :global(.dark) .category-pill,
 :global(.dark) .mini-copy-btn,
 :global(.dark) .view-btn,
@@ -1280,6 +2255,20 @@ const copyInstallCommand = async (skill: SkillItem) => {
 :global(.dark) .reset-btn {
   color: #d7e7f7;
   background: rgba(122, 167, 210, 0.18);
+}
+
+:global(.dark) .knowledge-top-button.primary {
+  background: #dce7f5;
+  color: #14253a;
+}
+
+:global(.dark) .knowledge-filter-chip {
+  background: rgba(122, 167, 210, 0.14);
+}
+
+:global(.dark) .knowledge-filter-chip.active {
+  background: #dce7f5;
+  color: #14253a;
 }
 
 :global(.dark) .view-btn {
@@ -1307,6 +2296,13 @@ const copyInstallCommand = async (skill: SkillItem) => {
 :global(.dark) .detail-tags span {
   background: rgba(0, 169, 184, 0.24);
   color: #cbffff;
+}
+
+:global(.dark) .knowledge-pill.status-shared,
+:global(.dark) .knowledge-pill.status-review,
+:global(.dark) .knowledge-pill.status-draft {
+  background: rgba(122, 167, 210, 0.14);
+  color: #d7e7f7;
 }
 
 :global(.dark) .copy-btn {

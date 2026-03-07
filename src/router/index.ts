@@ -5,6 +5,7 @@ const loadAIChatView = () => import('../views/AIChat.vue')
 const loadGameChatView = () => import('../views/GameChat.vue')
 const loadCustomerServiceView = () => import('../views/CustomerService.vue')
 const loadChatPdfView = () => import('../views/ChatPDF.vue')
+const loadAIKnowledgeBaseView = () => import('../views/AIKnowledgeBase.vue')
 const loadMcpGatewayView = () => import('../views/McpGatewayView.vue')
 const loadComingSoonView = () => import('../views/ComingSoonView.vue')
 const loadSkillsDetailView = () => import('../views/SkillsDetailView.vue')
@@ -37,6 +38,24 @@ const routes = [
     component: loadChatPdfView,
   },
   {
+    path: '/knowledge-base/editor/new',
+    name: 'ai-knowledge-base-editor-create',
+    component: loadAIKnowledgeBaseView,
+    alias: ['/ai-knowledge-base/editor/new'],
+  },
+  {
+    path: '/knowledge-base/editor/:id(\\d+)',
+    name: 'ai-knowledge-base-editor-edit',
+    component: loadAIKnowledgeBaseView,
+    alias: ['/ai-knowledge-base/editor/:id(\\d+)'],
+  },
+  {
+    path: '/ai-knowledge-base',
+    name: 'ai-knowledge-base',
+    component: loadAIKnowledgeBaseView,
+    alias: ['/knowledge-base'],
+  },
+  {
     path: '/coming-soon/skills/:skillId',
     name: 'skills-detail',
     component: loadSkillsDetailView,
@@ -48,8 +67,12 @@ const routes = [
     component: loadMcpGatewayView,
   },
   {
+    path: '/coming-soon/ai-knowledge-base',
+    redirect: '/ai-knowledge-base',
+  },
+  {
     path: '/coming-soon/comfort-simulator',
-    redirect: '/coming-soon/ai-knowledge-base',
+    redirect: '/ai-knowledge-base',
   },
   {
     path: '/coming-soon/:module',
@@ -59,7 +82,7 @@ const routes = [
   {
     path: '/comfort-simulator',
     name: 'comfort-simulator',
-    redirect: '/coming-soon/ai-knowledge-base',
+    redirect: '/ai-knowledge-base',
   },
   {
     path: '/about',
@@ -83,6 +106,7 @@ export const preloadCoreRoutes = async () => {
     loadAIChatView(),
     loadCustomerServiceView(),
     loadChatPdfView(),
+    loadAIKnowledgeBaseView(),
   ])
 }
 

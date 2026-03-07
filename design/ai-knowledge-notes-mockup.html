@@ -1,0 +1,735 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Notes Library Mockup</title>
+    <style>
+      :root {
+        --paper: #f7f0e4;
+        --paper-deep: #eadfcb;
+        --paper-line: rgba(125, 97, 56, 0.16);
+        --ink: #1d2d3f;
+        --muted: #627387;
+        --teal: #2a8c84;
+        --amber: #da9b4d;
+        --red: #cb7254;
+        --card: rgba(255, 251, 244, 0.88);
+        --shadow: rgba(66, 45, 14, 0.14);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Avenir Next", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(48, 143, 140, 0.14), transparent 26%),
+          radial-gradient(circle at top right, rgba(218, 155, 77, 0.12), transparent 28%),
+          linear-gradient(180deg, #efe4d2 0%, #f6efe4 26%, #f4ede1 100%);
+      }
+
+      .page {
+        width: 1440px;
+        min-height: 960px;
+        margin: 0 auto;
+        padding: 30px;
+        position: relative;
+      }
+
+      .paper-board {
+        min-height: 900px;
+        border-radius: 28px;
+        background:
+          linear-gradient(rgba(126, 96, 58, 0.08) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(126, 96, 58, 0.06) 1px, transparent 1px),
+          linear-gradient(180deg, rgba(255, 252, 247, 0.84), rgba(250, 243, 231, 0.95));
+        background-size: 100% 42px, 42px 100%, 100% 100%;
+        border: 1px solid rgba(131, 105, 69, 0.22);
+        box-shadow:
+          0 20px 60px var(--shadow),
+          inset 0 1px 0 rgba(255, 255, 255, 0.65);
+        padding: 26px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .paper-board::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle at 18% 10%, rgba(42, 140, 132, 0.09), transparent 20%),
+          radial-gradient(circle at 84% 20%, rgba(203, 114, 84, 0.08), transparent 18%);
+        pointer-events: none;
+      }
+
+      .topbar {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        padding-bottom: 18px;
+        border-bottom: 1px solid var(--paper-line);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .brand-badge {
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-size: 13px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        background: rgba(42, 140, 132, 0.1);
+        color: var(--teal);
+        border: 1px solid rgba(42, 140, 132, 0.16);
+        font-weight: 700;
+      }
+
+      .brand-copy h1 {
+        margin: 0;
+        font-size: 34px;
+        line-height: 1.06;
+        letter-spacing: -0.03em;
+        font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+        font-weight: 700;
+      }
+
+      .brand-copy p {
+        margin: 6px 0 0;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .top-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .search-shell {
+        width: 360px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        border-radius: 16px;
+        background: rgba(255, 252, 247, 0.75);
+        border: 1px solid rgba(110, 87, 56, 0.16);
+        color: var(--muted);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      }
+
+      .search-shell .placeholder {
+        flex: 1;
+        font-size: 15px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border-radius: 999px;
+        padding: 12px 18px;
+        font-weight: 700;
+        font-size: 14px;
+        border: 1px solid transparent;
+      }
+
+      .button-primary {
+        background: var(--ink);
+        color: #fff;
+        box-shadow: 0 12px 20px rgba(29, 45, 63, 0.18);
+      }
+
+      .button-secondary {
+        background: rgba(255, 252, 247, 0.76);
+        color: var(--ink);
+        border-color: rgba(110, 87, 56, 0.14);
+      }
+
+      .content {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: 250px minmax(0, 1fr) 320px;
+        gap: 18px;
+        margin-top: 22px;
+      }
+
+      .column {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid rgba(125, 97, 56, 0.12);
+        border-radius: 22px;
+        box-shadow:
+          0 14px 24px rgba(72, 49, 20, 0.08),
+          inset 0 1px 0 rgba(255, 255, 255, 0.68);
+      }
+
+      .sidebar-card {
+        padding: 18px 18px 16px;
+      }
+
+      .sidebar-card h2,
+      .side-stack h2,
+      .main-head h2 {
+        margin: 0;
+        font-size: 13px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #7d6750;
+      }
+
+      .menu-list,
+      .tag-list,
+      .todo-list {
+        list-style: none;
+        padding: 0;
+        margin: 14px 0 0;
+      }
+
+      .menu-list li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 11px 12px;
+        border-radius: 14px;
+        color: #344557;
+        font-size: 15px;
+      }
+
+      .menu-list li.active {
+        background: rgba(42, 140, 132, 0.11);
+        color: var(--teal);
+        font-weight: 700;
+      }
+
+      .tag-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .tag-list li {
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255, 252, 247, 0.92);
+        border: 1px solid rgba(125, 97, 56, 0.14);
+        font-size: 13px;
+        color: #4f6074;
+      }
+
+      .main-column {
+        gap: 14px;
+      }
+
+      .main-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 6px 0;
+      }
+
+      .main-head h3 {
+        margin: 10px 0 0;
+        font-size: 30px;
+        line-height: 1.08;
+        letter-spacing: -0.03em;
+        font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+      }
+
+      .main-head p {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .filter-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .filter-chip {
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(125, 97, 56, 0.14);
+        font-size: 13px;
+        color: #526478;
+        background: rgba(255, 252, 247, 0.74);
+      }
+
+      .filter-chip.active {
+        background: rgba(29, 45, 63, 0.92);
+        color: #fff;
+      }
+
+      .notes-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .note-card {
+        padding: 18px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .note-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 18px;
+        right: 18px;
+        height: 4px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--accent), rgba(255,255,255,0));
+      }
+
+      .note-card.yellow { --accent: #d5a546; }
+      .note-card.teal { --accent: #2a8c84; }
+      .note-card.red { --accent: #cb7254; }
+      .note-card.ink { --accent: #3b5778; }
+
+      .note-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 4px;
+      }
+
+      .note-source {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .favicon {
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        font-size: 14px;
+        font-weight: 800;
+        color: #fff;
+      }
+
+      .favicon.teal { background: #2a8c84; }
+      .favicon.red { background: #cb7254; }
+      .favicon.ink { background: #3b5778; }
+      .favicon.amber { background: #d5a546; }
+
+      .meta {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .meta strong {
+        font-size: 15px;
+      }
+
+      .meta span {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .type-pill {
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #41556b;
+        background: rgba(65, 85, 107, 0.08);
+      }
+
+      .note-card h4 {
+        margin: 16px 0 0;
+        font-size: 22px;
+        line-height: 1.28;
+        font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+      }
+
+      .quote {
+        margin: 12px 0 0;
+        padding: 12px 14px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.6);
+        border: 1px dashed rgba(125, 97, 56, 0.16);
+        color: #42566d;
+        line-height: 1.64;
+        font-size: 14px;
+      }
+
+      .note-card .body {
+        margin: 14px 0 0;
+        color: #43596f;
+        line-height: 1.7;
+        font-size: 15px;
+      }
+
+      .tag-row {
+        margin-top: 14px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tag {
+        padding: 7px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        background: rgba(42, 140, 132, 0.08);
+        color: #356c6b;
+      }
+
+      .note-foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 16px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .side-stack {
+        padding: 18px;
+      }
+
+      .capture-box {
+        margin-top: 14px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.62);
+        border: 1px dashed rgba(125, 97, 56, 0.18);
+        padding: 14px;
+      }
+
+      .input-like {
+        border-radius: 14px;
+        background: rgba(255, 252, 247, 0.92);
+        border: 1px solid rgba(125, 97, 56, 0.14);
+        padding: 12px 13px;
+        color: #748495;
+        font-size: 14px;
+      }
+
+      .input-like + .input-like {
+        margin-top: 10px;
+      }
+
+      .capture-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .capture-actions .button {
+        flex: 1;
+        padding-block: 11px;
+        font-size: 13px;
+      }
+
+      .mini-item {
+        margin-top: 12px;
+        padding: 12px 0;
+        border-top: 1px solid rgba(125, 97, 56, 0.12);
+      }
+
+      .mini-item:first-of-type {
+        margin-top: 14px;
+      }
+
+      .mini-item strong {
+        display: block;
+        font-size: 15px;
+      }
+
+      .mini-item p {
+        margin: 6px 0 0;
+        color: var(--muted);
+        line-height: 1.6;
+        font-size: 14px;
+      }
+
+      .todo-list li {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        color: #42556c;
+        line-height: 1.62;
+        font-size: 14px;
+      }
+
+      .todo-list li + li {
+        margin-top: 12px;
+      }
+
+      .todo-bullet {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 1px solid rgba(125, 97, 56, 0.2);
+        margin-top: 1px;
+        flex: 0 0 auto;
+      }
+
+      .tape {
+        position: absolute;
+        width: 96px;
+        height: 28px;
+        background: rgba(255, 251, 214, 0.55);
+        border: 1px solid rgba(194, 171, 98, 0.22);
+        box-shadow: 0 8px 14px rgba(113, 93, 29, 0.08);
+        transform: rotate(-8deg);
+      }
+
+      .tape.one {
+        top: 20px;
+        right: 220px;
+      }
+
+      .tape.two {
+        bottom: 84px;
+        left: 320px;
+        transform: rotate(5deg);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="paper-board">
+        <div class="tape one"></div>
+        <div class="tape two"></div>
+
+        <div class="topbar">
+          <div class="brand">
+            <div class="brand-badge">AI Notes</div>
+            <div class="brand-copy">
+              <h1>个人 AI 笔记库</h1>
+              <p>持续收藏文章、视频、Prompt、工具链接，并补上自己的理解和用法。</p>
+            </div>
+          </div>
+
+          <div class="top-actions">
+            <div class="search-shell">
+              <span>⌕</span>
+              <span class="placeholder">搜索标题、链接、关键词、我的备注</span>
+            </div>
+            <div class="button button-secondary">分享页</div>
+            <div class="button button-primary">+ 新增笔记</div>
+          </div>
+        </div>
+
+        <div class="content">
+          <div class="column">
+            <div class="card sidebar-card">
+              <h2>栏目</h2>
+              <ul class="menu-list">
+                <li class="active"><span>全部笔记</span><span>128</span></li>
+                <li><span>文章</span><span>48</span></li>
+                <li><span>视频</span><span>22</span></li>
+                <li><span>提示词</span><span>19</span></li>
+                <li><span>工具</span><span>14</span></li>
+                <li><span>案例</span><span>11</span></li>
+                <li><span>待整理</span><span>14</span></li>
+              </ul>
+            </div>
+
+            <div class="card sidebar-card">
+              <h2>高频标签</h2>
+              <ul class="tag-list">
+                <li>RAG</li>
+                <li>Agents</li>
+                <li>Prompt</li>
+                <li>评测</li>
+                <li>多模态</li>
+                <li>工作流</li>
+                <li>知识整理</li>
+                <li>分享会</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="column main-column">
+            <div class="main-head">
+              <div>
+                <h2>Library Shelf</h2>
+                <h3>我最近在积累的 AI 资料与笔记</h3>
+                <p>不是简单收藏链接，而是给每一条内容补上一段自己的摘要、判断和使用场景。</p>
+              </div>
+
+              <div class="filter-row">
+                <div class="filter-chip active">最近添加</div>
+                <div class="filter-chip">已分享</div>
+                <div class="filter-chip">待整理</div>
+                <div class="filter-chip">收藏最多</div>
+              </div>
+            </div>
+
+            <div class="notes-grid">
+              <div class="card note-card teal">
+                <div class="note-top">
+                  <div class="note-source">
+                    <div class="favicon teal">A</div>
+                    <div class="meta">
+                      <strong>Anthropic</strong>
+                      <span>文章 · 2026/03/05 添加</span>
+                    </div>
+                  </div>
+                  <div class="type-pill">文章</div>
+                </div>
+                <h4>Building Effective AI Agents</h4>
+                <div class="quote">我存这篇不是因为概念新，而是它把“什么时候该上 agent、什么时候不该上”讲得很清楚。</div>
+                <p class="body">适合拿来做团队内部统一认知。后续如果我写 agent 方案，应该先引用这里的任务分解和失败边界，而不是直接上多轮流程。</p>
+                <div class="tag-row">
+                  <span class="tag">Agent</span>
+                  <span class="tag">架构</span>
+                  <span class="tag">判断边界</span>
+                </div>
+                <div class="note-foot">
+                  <span>已写个人备注</span>
+                  <span>分享过 3 次</span>
+                </div>
+              </div>
+
+              <div class="card note-card yellow">
+                <div class="note-top">
+                  <div class="note-source">
+                    <div class="favicon amber">Y</div>
+                    <div class="meta">
+                      <strong>YouTube</strong>
+                      <span>视频 · 2026/03/04 添加</span>
+                    </div>
+                  </div>
+                  <div class="type-pill">视频</div>
+                </div>
+                <h4>How to Build a RAG Pipeline That Actually Works</h4>
+                <div class="quote">视频里最值得记的不是 demo，而是 chunking 和 retrieval 参数调优那一段。</div>
+                <p class="body">看完后我想补一篇自己的排障清单，把“召回正常但回答很差”的几种情况拆开写，这条先标记成待整理。</p>
+                <div class="tag-row">
+                  <span class="tag">RAG</span>
+                  <span class="tag">调优</span>
+                  <span class="tag">排障</span>
+                </div>
+                <div class="note-foot">
+                  <span>状态：待整理</span>
+                  <span>01:12:20</span>
+                </div>
+              </div>
+
+              <div class="card note-card red">
+                <div class="note-top">
+                  <div class="note-source">
+                    <div class="favicon red">P</div>
+                    <div class="meta">
+                      <strong>Personal Note</strong>
+                      <span>Prompt · 2026/03/03 添加</span>
+                    </div>
+                  </div>
+                  <div class="type-pill">提示词</div>
+                </div>
+                <h4>把零散素材整理成“可分享知识卡”的 Prompt</h4>
+                <div class="quote">这是我自己反复用过的整理模板，适合把文章、聊天记录和视频笔记压缩成一张可读卡片。</div>
+                <p class="body">后面可以给每个 Prompt 再补“适用对象 / 不适合场景 / 推荐模型”，这样分享出去更像真正的知识条目，而不是一句咒语。</p>
+                <div class="tag-row">
+                  <span class="tag">Prompt</span>
+                  <span class="tag">知识整理</span>
+                  <span class="tag">复用</span>
+                </div>
+                <div class="note-foot">
+                  <span>收藏 24</span>
+                  <span>已分享</span>
+                </div>
+              </div>
+
+              <div class="card note-card ink">
+                <div class="note-top">
+                  <div class="note-source">
+                    <div class="favicon ink">G</div>
+                    <div class="meta">
+                      <strong>GitHub</strong>
+                      <span>工具 · 2026/03/01 添加</span>
+                    </div>
+                  </div>
+                  <div class="type-pill">工具</div>
+                </div>
+                <h4>一个适合做个人 AI 收藏库的开源项目</h4>
+                <div class="quote">先记住它的结构：链接 + 标签 + 摘要 + 个人注释。这正好是我现在需要的最小模型。</div>
+                <p class="body">如果后面自己做系统，录入流程一定要短，不然很快就会变成“等以后整理”，最后一条都积不下来。</p>
+                <div class="tag-row">
+                  <span class="tag">收藏系统</span>
+                  <span class="tag">MVP</span>
+                  <span class="tag">参考实现</span>
+                </div>
+                <div class="note-foot">
+                  <span>最近回看</span>
+                  <span>适合做首版</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="column">
+            <div class="card side-stack">
+              <h2>快速录入</h2>
+              <div class="capture-box">
+                <div class="input-like">粘贴文章 / 视频 / GitHub / Prompt 链接</div>
+                <div class="input-like">写一句：为什么值得存？</div>
+                <div class="input-like">加 2~3 个标签，例如：RAG / Prompt / Agents</div>
+                <div class="capture-actions">
+                  <div class="button button-primary">保存笔记</div>
+                  <div class="button button-secondary">存为待整理</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card side-stack">
+              <h2>最近分享</h2>
+              <div class="mini-item">
+                <strong>给团队解释 Agent 适用边界</strong>
+                <p>一条文章链接 + 两段我的备注，比直接丢原文更有用。</p>
+              </div>
+              <div class="mini-item">
+                <strong>RAG 视频里的排障部分</strong>
+                <p>计划拆成 checklist，适合后面沉淀成自己的标准处理流程。</p>
+              </div>
+            </div>
+
+            <div class="card side-stack">
+              <h2>待补充</h2>
+              <ul class="todo-list">
+                <li><span class="todo-bullet"></span><span>支持一键生成公开分享页，不暴露后台编辑入口。</span></li>
+                <li><span class="todo-bullet"></span><span>支持视频链接自动抓取封面和来源信息。</span></li>
+                <li><span class="todo-bullet"></span><span>给每条笔记加“我的结论”字段，强化个人积累感。</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

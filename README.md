@@ -63,7 +63,10 @@ npm run preview
 前端通过环境变量读取后端地址：
 
 - `VITE_API_BASE_URL`
+- `VITE_KNOWLEDGE_DELETE_ENABLED`
 - 默认值：`/api`（推荐配合 Nginx 反向代理）
+- `VITE_KNOWLEDGE_DELETE_ENABLED` 默认策略：
+  本地开发默认允许删除，生产构建默认隐藏删除按钮；测试环境如需保留删除，可显式设为 `true`
 
 示例：
 
@@ -75,6 +78,11 @@ VITE_API_BASE_URL=http://localhost:8080 npm run dev
 ```bash
 # 生产构建（默认 /api，可省略）
 VITE_API_BASE_URL=/api npm run build
+```
+
+```bash
+# 测试环境构建，显式保留知识库删除按钮
+VITE_API_BASE_URL=/api VITE_KNOWLEDGE_DELETE_ENABLED=true npm run build
 ```
 
 ## 主要页面路由

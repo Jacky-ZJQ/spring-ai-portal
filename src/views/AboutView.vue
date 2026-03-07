@@ -32,14 +32,14 @@ const labModules = [
   {
     title: 'SKILLS安装榜',
     subtitle: '构建全球 Agent Skills 热门榜单，支持分类发现、详情查看与快捷安装。',
-    status: '建设中',
+    status: '已上线',
     route: '/coming-soon/skills',
     accent: '#f59e0b',
   },
   {
     title: 'MCP网关',
     subtitle: '把 HTTP/RPC 接口统一暴露为 MCP 能力层。',
-    status: '建设中',
+    status: '已上线',
     route: '/coming-soon/mcp-gateway',
     accent: '#0ea5e9',
   },
@@ -67,8 +67,8 @@ const labModules = [
   {
     title: 'AI知识库',
     subtitle: '沉淀并分享 AI 提示词、工作流和实战案例，让经验可检索、可复用。',
-    status: '建设中',
-    route: '/coming-soon/ai-knowledge-base',
+    status: '已上线',
+    route: '/ai-knowledge-base',
     accent: '#efb91f',
   },
 ]
@@ -203,7 +203,7 @@ const formatActionTime = (isoTime) => {
             class="module-status"
             :class="{
               'status-live': module.status === '已上线',
-              'status-building': module.status === '建设中'
+              'status-building': module.status === '已上线'
             }"
           >
             {{ module.status }}

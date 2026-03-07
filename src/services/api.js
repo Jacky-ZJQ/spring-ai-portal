@@ -15,6 +15,22 @@ const buildApiUrl = (path, query = {}) => {
   return url.toString()
 }
 
+const unwrapApiResponse = async (response) => {
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+
+  const payload = await response.json()
+  if (payload && typeof payload === 'object' && Object.prototype.hasOwnProperty.call(payload, 'ok')) {
+    if (payload.ok !== 1) {
+      throw new Error(payload.msg || '请求失败')
+    }
+    return payload.data
+  }
+
+  return payload
+}
+
 export const chatAPI = {
   // 发送聊天消息
   async sendMessage(data, chatId) {
@@ -178,5 +194,77 @@ export const chatAPI = {
       console.error('API Error:', error)
       throw error
     }
+  }
+}
+
+export const knowledgeAPI = {
+  async listArticles(query = {}) {
+    return unwrapApiResponse(await fetch(buildApiUrl('/ai/knowledge/articles', query)))
+  },
+
+  async getArticleDetail(id) {
+    return unwrapApiResponse(await fetch(buildApiPath(`/ai/knowledge/articles/${id}`)))
+  },
+
+  async createArticle(data) {
+    return unwrapApiResponse(await fetch(buildApiPath('/ai/knowledge/articles'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    }))
+  },
+
+  async updateArticle(id, data) {
+    return unwrapApiResponse(await fetch(buildApiPath(`/ai/knowledge/articles/${id}`), {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    }))
+  },
+
+  async deleteArticle(id) {
+    return unwrapApiResponse(await fetch(buildApiPath(`/ai/knowledge/articles/${id}`), {
+      method: 'DELETE'
+    }))
+  },
+
+  async publishArticle(id) {
+    return unwrapApiResponse(await fetch(buildApiPath(`/ai/knowledge/articles/${id}/publish`), {
+      method: 'POST'
+    }))
+  },
+
+  async unpublishArticle(id) {
+    return unwrapApiResponse(await fetch(buildApiPath(`/ai/knowledge/articles/${id}/unpublish`), {
+      method: 'POST'
+    }))
+  },
+
+  async likeArticle(id) {
+    return unwrapApiResponse(await fetch(buildApiPath(`/ai/knowledge/articles/${id}/like`), {
+      method: 'POST'
+    }))
+  },
+
+  async listCategories() {
+    return unwrapApiResponse(await fetch(buildApiPath('/ai/knowledge/categories')))
+  },
+
+  async listTags() {
+    return unwrapApiResponse(await fetch(buildApiPath('/ai/knowledge/tags')))
+  },
+
+  async createShareLink(id, expireHours = 168) {
+    return unwrapApiResponse(await fetch(buildApiUrl(`/ai/knowledge/articles/${id}/share`, { expireHours }), {
+      method: 'POST'
+    }))
+  },
+
+  async getSharedArticle(token) {
+    return unwrapApiResponse(await fetch(buildApiPath(`/ai/knowledge/share/${token}`)))
   }
 }

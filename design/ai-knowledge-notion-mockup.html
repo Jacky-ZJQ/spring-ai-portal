@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Notes Minimal Mockup</title>
+    <style>
+      :root {
+        --bg: #f6f6f3;
+        --panel: rgba(255, 255, 255, 0.92);
+        --panel-soft: rgba(255, 255, 255, 0.74);
+        --line: rgba(30, 41, 59, 0.09);
+        --text: #192332;
+        --muted: #677489;
+        --chip: #eef2f6;
+        --chip-active: #1f2937;
+        --chip-active-text: #fff;
+        --accent: #2674ff;
+        --green: #1c8c68;
+        --yellow: #b78125;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(38, 116, 255, 0.05), transparent 24%),
+          linear-gradient(180deg, #fafaf8 0%, var(--bg) 100%);
+      }
+
+      .page {
+        width: 1440px;
+        min-height: 960px;
+        margin: 0 auto;
+        padding: 28px 32px 34px;
+      }
+
+      .shell {
+        min-height: 896px;
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        background: rgba(252, 252, 250, 0.88);
+        box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+        display: grid;
+        grid-template-columns: 250px minmax(0, 1fr);
+        overflow: hidden;
+      }
+
+      .sidebar {
+        border-right: 1px solid var(--line);
+        background: rgba(250, 250, 248, 0.92);
+        padding: 24px 18px;
+      }
+
+      .main {
+        padding: 24px 26px 28px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .brand h1 {
+        margin: 0;
+        font-size: 20px;
+        letter-spacing: -0.03em;
+      }
+
+      .brand span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 9px;
+        background: #1f2937;
+        color: white;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .brand-copy {
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .nav-group {
+        margin-top: 26px;
+      }
+
+      .nav-title,
+      .section-eyebrow {
+        margin: 0 0 12px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        color: #8b95a7;
+        text-transform: uppercase;
+      }
+
+      .nav-list,
+      .tag-grid,
+      .meta-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .nav-list li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        color: #445162;
+        font-size: 14px;
+      }
+
+      .nav-list li.active {
+        background: #fff;
+        box-shadow: inset 0 0 0 1px rgba(31, 41, 55, 0.08);
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      .nav-list li .count {
+        color: #97a1b0;
+        font-size: 12px;
+      }
+
+      .tag-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tag-grid li {
+        padding: 7px 10px;
+        border-radius: 999px;
+        background: #fff;
+        border: 1px solid var(--line);
+        font-size: 12px;
+        color: #526071;
+      }
+
+      .meta-list li + li {
+        margin-top: 10px;
+      }
+
+      .meta-list li {
+        color: #556274;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+      }
+
+      .search {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        max-width: 420px;
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: #8590a1;
+        font-size: 14px;
+      }
+
+      .top-actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        padding: 11px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        border: 1px solid var(--line);
+        background: #fff;
+      }
+
+      .button.primary {
+        background: #1f2937;
+        color: #fff;
+        border-color: transparent;
+      }
+
+      .hero {
+        margin-top: 24px;
+      }
+
+      .hero h2 {
+        margin: 0;
+        font-size: 40px;
+        line-height: 1.05;
+        letter-spacing: -0.05em;
+      }
+
+      .hero p {
+        margin: 10px 0 0;
+        max-width: 720px;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.7;
+      }
+
+      .stats {
+        margin-top: 20px;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .stat {
+        padding: 16px;
+        border-radius: 18px;
+        border: 1px solid var(--line);
+        background: var(--panel-soft);
+      }
+
+      .stat strong {
+        display: block;
+        font-size: 26px;
+        letter-spacing: -0.04em;
+      }
+
+      .stat span {
+        display: block;
+        margin-top: 4px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .toolbar {
+        margin-top: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .toolbar-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .toolbar-top h3 {
+        margin: 0;
+        font-size: 20px;
+        letter-spacing: -0.03em;
+      }
+
+      .toolbar-top p {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .chip-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .chip {
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: var(--chip);
+        color: #596779;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .chip.active {
+        background: var(--chip-active);
+        color: var(--chip-active-text);
+      }
+
+      .database {
+        margin-top: 18px;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        overflow: hidden;
+        background: var(--panel);
+      }
+
+      .table-head,
+      .table-row {
+        display: grid;
+        grid-template-columns: 2.1fr 0.8fr 0.8fr 1.1fr 1fr 0.8fr;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .table-head {
+        padding: 16px 18px;
+        background: rgba(248, 249, 251, 0.82);
+        border-bottom: 1px solid var(--line);
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #8b95a7;
+      }
+
+      .table-row {
+        padding: 16px 18px;
+        border-bottom: 1px solid rgba(30, 41, 59, 0.06);
+      }
+
+      .table-row:last-child {
+        border-bottom: 0;
+      }
+
+      .title-cell strong {
+        display: block;
+        font-size: 15px;
+      }
+
+      .title-cell p {
+        margin: 5px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .pill.article { background: rgba(38, 116, 255, 0.1); color: var(--accent); }
+      .pill.video { background: rgba(183, 129, 37, 0.12); color: var(--yellow); }
+      .pill.prompt { background: rgba(28, 140, 104, 0.12); color: var(--green); }
+      .pill.draft { background: #f3f4f6; color: #667085; }
+      .pill.shared { background: rgba(31, 41, 55, 0.08); color: #1f2937; }
+
+      .cell {
+        font-size: 13px;
+        color: #4d5b6d;
+      }
+
+      .cell.small {
+        color: #8b95a7;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="shell">
+        <aside class="sidebar">
+          <div class="brand">
+            <h1>AI Notes</h1>
+            <span>J</span>
+          </div>
+          <div class="brand-copy">像 Obsidian / Notion 一样管理链接、视频、Prompt 和自己的阅读备注。</div>
+
+          <div class="nav-group">
+            <p class="nav-title">Views</p>
+            <ul class="nav-list">
+              <li class="active"><span>全部条目</span><span class="count">128</span></li>
+              <li><span>最近新增</span><span class="count">24</span></li>
+              <li><span>待整理</span><span class="count">14</span></li>
+              <li><span>已分享</span><span class="count">32</span></li>
+              <li><span>视频清单</span><span class="count">22</span></li>
+              <li><span>Prompt Cards</span><span class="count">19</span></li>
+            </ul>
+          </div>
+
+          <div class="nav-group">
+            <p class="nav-title">Tags</p>
+            <ul class="tag-grid">
+              <li>RAG</li>
+              <li>Agents</li>
+              <li>Prompt</li>
+              <li>工作流</li>
+              <li>评测</li>
+              <li>多模态</li>
+              <li>知识整理</li>
+            </ul>
+          </div>
+
+          <div class="nav-group">
+            <p class="nav-title">Quick Notes</p>
+            <ul class="meta-list">
+              <li>先做最短录入链路，不然收藏很快会堆成“稍后整理”。</li>
+              <li>每条链接至少留一句“为什么存它”，否则只是书签管理。</li>
+              <li>分享页应该从数据库视图里一键生成，不要单独维护。</li>
+            </ul>
+          </div>
+        </aside>
+
+        <main class="main">
+          <div class="topbar">
+            <div class="search">⌕ 搜索标题、域名、标签、我的备注</div>
+            <div class="top-actions">
+              <div class="button">筛选</div>
+              <div class="button">排序</div>
+              <div class="button primary">+ 新增笔记</div>
+            </div>
+          </div>
+
+          <section class="hero">
+            <p class="section-eyebrow">Notes Database</p>
+            <h2>一个更像数据库的 AI 资料库</h2>
+            <p>重点不是做花哨首页，而是把文章、视频、Prompt、工具链接和你的注释装进一个长期可维护的结构里。像 Notion 的数据库视图，像 Obsidian 的阅读笔记。</p>
+          </section>
+
+          <div class="stats">
+            <div class="stat"><strong>128</strong><span>总条目</span></div>
+            <div class="stat"><strong>32</strong><span>已分享</span></div>
+            <div class="stat"><strong>14</strong><span>待整理</span></div>
+            <div class="stat"><strong>7</strong><span>高频标签</span></div>
+          </div>
+
+          <section class="toolbar">
+            <div class="toolbar-top">
+              <div>
+                <h3>资料库视图</h3>
+                <p>按类型、状态、标签和时间过滤，结构清晰，录入成本低。</p>
+              </div>
+              <div class="chip-row">
+                <div class="chip active">全部</div>
+                <div class="chip">文章</div>
+                <div class="chip">视频</div>
+                <div class="chip">Prompt</div>
+                <div class="chip">工具</div>
+                <div class="chip">已分享</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="database">
+            <div class="table-head">
+              <div>Title</div>
+              <div>Type</div>
+              <div>Status</div>
+              <div>Tags</div>
+              <div>My Note</div>
+              <div>Updated</div>
+            </div>
+
+            <div class="table-row">
+              <div class="title-cell">
+                <strong>Building Effective AI Agents</strong>
+                <p>Anthropic 文章，讲清了 agent 适用边界，适合拿来对齐团队认知。</p>
+              </div>
+              <div class="cell"><span class="pill article">文章</span></div>
+              <div class="cell"><span class="pill shared">已分享</span></div>
+              <div class="cell">Agents, 架构</div>
+              <div class="cell">值得二次整理成内部判断准则</div>
+              <div class="cell small">03/07</div>
+            </div>
+
+            <div class="table-row">
+              <div class="title-cell">
+                <strong>How to Build a RAG Pipeline That Actually Works</strong>
+                <p>YouTube 视频，重点不是 demo，而是 retrieval / chunking 调优部分。</p>
+              </div>
+              <div class="cell"><span class="pill video">视频</span></div>
+              <div class="cell"><span class="pill draft">待整理</span></div>
+              <div class="cell">RAG, 排障</div>
+              <div class="cell">后续补成 checklist</div>
+              <div class="cell small">03/06</div>
+            </div>
+
+            <div class="table-row">
+              <div class="title-cell">
+                <strong>把零散素材整理成可分享知识卡的 Prompt</strong>
+                <p>我自己反复用过的整理模板，适合把文章和视频压缩成可分享卡片。</p>
+              </div>
+              <div class="cell"><span class="pill prompt">Prompt</span></div>
+              <div class="cell"><span class="pill shared">已分享</span></div>
+              <div class="cell">Prompt, 知识整理</div>
+              <div class="cell">适合变成标准模板</div>
+              <div class="cell small">03/05</div>
+            </div>
+
+            <div class="table-row">
+              <div class="title-cell">
+                <strong>一个适合做个人 AI 收藏库的开源项目</strong>
+                <p>GitHub 项目，结构上很接近“链接 + 标签 + 摘要 + 个人注释”的 MVP。</p>
+              </div>
+              <div class="cell"><span class="pill article">工具</span></div>
+              <div class="cell"><span class="pill draft">待评估</span></div>
+              <div class="cell">MVP, 收藏系统</div>
+              <div class="cell">适合做首版参考实现</div>
+              <div class="cell small">03/03</div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

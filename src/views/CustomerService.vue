@@ -47,7 +47,7 @@
             <img :src="starbucksIcon" class="avatar" style="width:48px;height:48px;object-fit:contain;background:none;border-radius:12px;" />
             <div class="info">
               <h3>小星</h3>
-              <p>Starbucks咖啡课程智能客服</p>
+              <p>Starbucks咖啡课程智能客服（Agent/Tool/MCP）</p>
             </div>
           </div>
         </div>

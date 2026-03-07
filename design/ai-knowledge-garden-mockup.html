@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Notes Garden Mockup</title>
+    <style>
+      :root {
+        --bg: #f5f0e8;
+        --ink: #223249;
+        --muted: #66768b;
+        --green: #3c8c6d;
+        --brown: #8e6b45;
+        --amber: #d3a25c;
+        --coral: #cb7659;
+        --lavender: #7e74c8;
+        --paper: rgba(255, 252, 246, 0.84);
+        --line: rgba(91, 67, 37, 0.14);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Avenir Next", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 12% 8%, rgba(60, 140, 109, 0.12), transparent 22%),
+          radial-gradient(circle at 88% 12%, rgba(203, 118, 89, 0.08), transparent 20%),
+          linear-gradient(180deg, #efe6d8 0%, var(--bg) 100%);
+      }
+
+      .page {
+        width: 1440px;
+        min-height: 960px;
+        margin: 0 auto;
+        padding: 28px;
+      }
+
+      .wall {
+        min-height: 904px;
+        position: relative;
+        border-radius: 34px;
+        padding: 30px;
+        background:
+          linear-gradient(180deg, rgba(255, 252, 246, 0.76), rgba(248, 241, 230, 0.92)),
+          radial-gradient(circle at 12% 14%, rgba(60, 140, 109, 0.08), transparent 26%);
+        border: 1px solid rgba(110, 82, 46, 0.16);
+        box-shadow:
+          0 26px 64px rgba(78, 53, 22, 0.12),
+          inset 0 1px 0 rgba(255, 255, 255, 0.72);
+        overflow: hidden;
+      }
+
+      .wall::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          radial-gradient(rgba(139, 108, 72, 0.14) 1px, transparent 1px);
+        background-size: 26px 26px;
+        opacity: 0.24;
+        pointer-events: none;
+      }
+
+      .topbar {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 18px;
+      }
+
+      .title-wrap {
+        max-width: 760px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(60, 140, 109, 0.1);
+        color: var(--green);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 16px 0 0;
+        font-size: 58px;
+        line-height: 1.02;
+        letter-spacing: -0.05em;
+        font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+        font-weight: 700;
+      }
+
+      .subtitle {
+        margin: 14px 0 0;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.72;
+      }
+
+      .actions {
+        margin-top: 18px;
+        display: flex;
+        gap: 12px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border-radius: 999px;
+        padding: 12px 18px;
+        font-size: 14px;
+        font-weight: 700;
+        border: 1px solid rgba(90, 68, 41, 0.14);
+        background: rgba(255, 252, 246, 0.74);
+      }
+
+      .button.primary {
+        background: var(--ink);
+        color: #fff;
+        border-color: transparent;
+      }
+
+      .corner-panel {
+        width: 280px;
+        padding: 16px;
+        border-radius: 22px;
+        background: rgba(255, 252, 246, 0.76);
+        border: 1px solid var(--line);
+        box-shadow: 0 16px 30px rgba(91, 67, 37, 0.08);
+      }
+
+      .corner-panel h2,
+      .card h2 {
+        margin: 0;
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #8b755a;
+      }
+
+      .mini-list {
+        list-style: none;
+        padding: 0;
+        margin: 14px 0 0;
+      }
+
+      .mini-list li + li {
+        margin-top: 12px;
+      }
+
+      .mini-list strong {
+        display: block;
+        font-size: 15px;
+      }
+
+      .mini-list span {
+        display: block;
+        margin-top: 5px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .board {
+        position: relative;
+        z-index: 1;
+        margin-top: 26px;
+        display: grid;
+        grid-template-columns: 1.1fr 0.95fr 0.95fr 0.85fr;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .card {
+        position: relative;
+        border-radius: 24px;
+        background: var(--paper);
+        border: 1px solid var(--line);
+        box-shadow:
+          0 18px 30px rgba(91, 67, 37, 0.08),
+          inset 0 1px 0 rgba(255, 255, 255, 0.68);
+        overflow: hidden;
+      }
+
+      .card.pinned {
+        transform: rotate(-1.3deg);
+      }
+
+      .card.sketch {
+        transform: rotate(1.4deg);
+      }
+
+      .card.slim {
+        transform: rotate(-0.4deg);
+      }
+
+      .card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 18px 18px 0;
+      }
+
+      .card-body {
+        padding: 16px 18px 18px;
+      }
+
+      .stamp {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .stamp.green { background: rgba(60, 140, 109, 0.12); color: var(--green); }
+      .stamp.amber { background: rgba(211, 162, 92, 0.16); color: var(--brown); }
+      .stamp.coral { background: rgba(203, 118, 89, 0.14); color: var(--coral); }
+      .stamp.lavender { background: rgba(126, 116, 200, 0.14); color: var(--lavender); }
+
+      .source {
+        color: #8b755a;
+        font-size: 12px;
+      }
+
+      .card h3 {
+        margin: 0;
+        font-size: 28px;
+        line-height: 1.14;
+        letter-spacing: -0.03em;
+        font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+      }
+
+      .card p {
+        margin: 10px 0 0;
+        color: #4d5f74;
+        font-size: 15px;
+        line-height: 1.7;
+      }
+
+      .quote-box {
+        margin-top: 14px;
+        padding: 12px 14px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.56);
+        border: 1px dashed rgba(91, 67, 37, 0.16);
+        color: #43586c;
+        font-size: 14px;
+        line-height: 1.68;
+      }
+
+      .tags {
+        margin-top: 14px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tag {
+        padding: 7px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        color: #526477;
+        background: rgba(255, 255, 255, 0.62);
+        border: 1px solid rgba(91, 67, 37, 0.1);
+      }
+
+      .foot {
+        margin-top: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        color: #8a7680;
+        font-size: 12px;
+      }
+
+      .card.large .card-body {
+        padding-top: 8px;
+      }
+
+      .card.large h3 {
+        font-size: 36px;
+        line-height: 1.05;
+      }
+
+      .card.medium h3 {
+        font-size: 26px;
+      }
+
+      .card.small h3 {
+        font-size: 22px;
+      }
+
+      .card-column {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .index-card {
+        padding: 18px;
+      }
+
+      .index-grid {
+        margin-top: 14px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .index-item {
+        border-radius: 16px;
+        padding: 12px 14px;
+        background: rgba(255, 255, 255, 0.56);
+        border: 1px solid rgba(91, 67, 37, 0.1);
+      }
+
+      .index-item strong {
+        display: block;
+        font-size: 15px;
+      }
+
+      .index-item span {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .thread {
+        position: absolute;
+        border-top: 2px dashed rgba(60, 140, 109, 0.22);
+        transform-origin: left center;
+        pointer-events: none;
+      }
+
+      .thread.one {
+        width: 220px;
+        left: 520px;
+        top: 366px;
+        transform: rotate(9deg);
+      }
+
+      .thread.two {
+        width: 180px;
+        left: 840px;
+        top: 462px;
+        transform: rotate(-11deg);
+      }
+
+      .pin {
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, #fff, rgba(255,255,255,0.35) 30%, currentColor 31%);
+        box-shadow: 0 6px 10px rgba(91, 67, 37, 0.1);
+      }
+
+      .pin.green { color: #4f8f78; }
+      .pin.coral { color: #c86e5a; }
+      .pin.amber { color: #c9974e; }
+      .pin.lavender { color: #7d70c7; }
+
+      .pin.p1 { top: 12px; right: 18px; }
+      .pin.p2 { top: 12px; left: 18px; }
+      .pin.p3 { top: 14px; right: 20px; }
+      .pin.p4 { top: 16px; left: 22px; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="wall">
+        <div class="topbar">
+          <div class="title-wrap">
+            <div class="eyebrow">Digital Garden / Research Wall</div>
+            <h1>我的 AI 数字花园与研究手札墙</h1>
+            <p class="subtitle">这里不是数据库，而更像一个持续生长的个人知识场。文章、视频、Prompt、工具、失败经验都可以贴上来，然后慢慢连成自己的理解网络。</p>
+            <div class="actions">
+              <div class="button primary">贴一张新手札</div>
+              <div class="button">打开时间线</div>
+            </div>
+          </div>
+
+          <div class="corner-panel">
+            <h2>最近生长</h2>
+            <ul class="mini-list">
+              <li><strong>Agent 适用边界</strong><span>准备从一篇文章长成一组判断原则。</span></li>
+              <li><strong>RAG 排障清单</strong><span>从视频笔记发芽，下一步补成自己的复盘模板。</span></li>
+              <li><strong>知识卡整理 Prompt</strong><span>已经能稳定产出分享素材，值得继续扩写。</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="thread one"></div>
+        <div class="thread two"></div>
+
+        <div class="board">
+          <div class="card large pinned">
+            <div class="pin green p1"></div>
+            <div class="card-head">
+              <span class="stamp green">Seed Note</span>
+              <span class="source">Anthropic / 03.07</span>
+            </div>
+            <div class="card-body">
+              <h3>什么时候该上 Agent，什么时候不该上</h3>
+              <p>这篇文章最重要的不是“如何做 Agent”，而是它把使用边界讲清楚了。我想把它长成一套自己的判断框架。</p>
+              <div class="quote-box">先别把所有流程都包成 agent。任务不稳定、目标不清、反馈不可测时，agent 只会把混乱自动化。</div>
+              <div class="tags">
+                <span class="tag">Agent</span>
+                <span class="tag">边界判断</span>
+                <span class="tag">架构思考</span>
+              </div>
+              <div class="foot">
+                <span>下一步：补一张“适合 / 不适合”对照卡</span>
+                <span>已分享 3 次</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-column">
+            <div class="card medium sketch">
+              <div class="pin amber p2"></div>
+              <div class="card-head">
+                <span class="stamp amber">Video Clip</span>
+                <span class="source">YouTube / 03.06</span>
+              </div>
+              <div class="card-body">
+                <h3>RAG 视频里真正值得记的那 12 分钟</h3>
+                <p>我要记住的是检索调参，而不是整段 demo。后续把它拆成“召回正常但答案差”的排障图谱。</p>
+                <div class="tags">
+                  <span class="tag">RAG</span>
+                  <span class="tag">视频笔记</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card small">
+              <div class="pin coral p3"></div>
+              <div class="card-head">
+                <span class="stamp coral">Prompt Leaf</span>
+                <span class="source">Personal / 03.05</span>
+              </div>
+              <div class="card-body">
+                <h3>把素材压成知识卡的 Prompt</h3>
+                <p>已经反复用过，适合继续长成一个完整整理流程。</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-column">
+            <div class="card medium">
+              <div class="pin lavender p4"></div>
+              <div class="card-head">
+                <span class="stamp lavender">Tool Branch</span>
+                <span class="source">GitHub / 03.03</span>
+              </div>
+              <div class="card-body">
+                <h3>一个适合做个人收藏库的开源项目</h3>
+                <p>我关心的不是功能多不多，而是它的最小模型够不够顺手：链接、标签、摘要、个人注释。</p>
+                <div class="quote-box">如果录入流程不够短，任何知识库最后都会退化成“稍后整理”。</div>
+                <div class="tags">
+                  <span class="tag">MVP</span>
+                  <span class="tag">收藏系统</span>
+                  <span class="tag">参考实现</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card small slim">
+              <div class="card-head">
+                <span class="stamp green">Idea</span>
+                <span class="source">Today</span>
+              </div>
+              <div class="card-body">
+                <h3>每条手札都应该有“我的结论”</h3>
+                <p>不然它只是外部资料，不是我的知识花园。</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card index-card">
+            <h2>花园索引</h2>
+            <div class="index-grid">
+              <div class="index-item"><strong>Prompt 树</strong><span>19 条枝叶</span></div>
+              <div class="index-item"><strong>RAG 角落</strong><span>7 条排障笔记</span></div>
+              <div class="index-item"><strong>Agent 判断区</strong><span>4 张框架卡</span></div>
+              <div class="index-item"><strong>分享会素材</strong><span>12 条可复用手札</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
