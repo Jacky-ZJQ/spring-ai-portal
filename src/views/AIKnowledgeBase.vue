@@ -4,7 +4,6 @@ import { useDark } from '@vueuse/core'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
-import PdfjsWorker from 'pdfjs-dist/legacy/build/pdf.worker.mjs?worker&inline'
 import { knowledgeAPI } from '../services/api.js'
 
 type ArticleType = 'PROMPT' | 'WORKFLOW' | 'CASE' | 'NOTE'
@@ -181,7 +180,6 @@ const form = reactive<ArticleFormState>(createEmptyForm())
 let feedbackTimer: ReturnType<typeof window.setTimeout> | null = null
 let shareCooldownTimer: ReturnType<typeof window.setTimeout> | null = null
 let pdfjsModulePromise: Promise<typeof import('pdfjs-dist/legacy/build/pdf.mjs')> | null = null
-let pdfWorkerInstance: Worker | null = null
 const likedStorageKey = 'ai-knowledge-liked-articles'
 const likedArticleIds = ref<number[]>([])
 const formSnapshotBaseline = ref('')
@@ -231,6 +229,7 @@ const editorSubtitle = computed(() => (
     : '你正在独立编辑这张知识卡片，返回前会检查未保存内容。'
 ))
 const importSupportHint = '当前支持导入 PDF（.pdf）、Markdown（.md / .markdown）和 TXT（.txt）。如果 Markdown 含本地图片，请把图片文件一起选中。'
+const pdfWorkerScriptPath = `${import.meta.env.BASE_URL}pdf.worker.min.js`
 const canShareSelected = computed(() => selectedArticle.value?.status === 'PUBLISHED')
 const shareButtonText = computed(() => {
   if (shareLoading.value) return '生成中...'
@@ -769,9 +768,8 @@ const loadPdfjs = async () => {
   }
 
   const pdfjsLib = await pdfjsModulePromise
-  if (pdfjsLib.GlobalWorkerOptions.workerPort !== pdfWorkerInstance) {
-    pdfWorkerInstance = new PdfjsWorker()
-    pdfjsLib.GlobalWorkerOptions.workerPort = pdfWorkerInstance
+  if (pdfjsLib.GlobalWorkerOptions.workerSrc !== pdfWorkerScriptPath) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerScriptPath
   }
   return pdfjsLib
 }
@@ -1490,10 +1488,6 @@ onBeforeUnmount(() => {
   }
   if (shareCooldownTimer) {
     window.clearTimeout(shareCooldownTimer)
-  }
-  if (pdfWorkerInstance) {
-    pdfWorkerInstance.terminate()
-    pdfWorkerInstance = null
   }
 })
 </script>

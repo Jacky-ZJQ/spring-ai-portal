@@ -1,8 +1,34 @@
+import fs from 'node:fs'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
+const pdfWorkerSource = new URL('./node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs', import.meta.url)
+
+const pdfWorkerAssetPlugin = () => ({
+  name: 'pdfjs-worker-asset',
+  configureServer(server) {
+    server.middlewares.use((req, res, next) => {
+      const requestPath = req.url?.split('?')[0]
+      if (requestPath !== '/pdf.worker.min.js') {
+        next()
+        return
+      }
+
+      res.setHeader('Content-Type', 'text/javascript; charset=utf-8')
+      fs.createReadStream(pdfWorkerSource).pipe(res)
+    })
+  },
+  generateBundle() {
+    this.emitFile({
+      type: 'asset',
+      fileName: 'pdf.worker.min.js',
+      source: fs.readFileSync(pdfWorkerSource, 'utf8')
+    })
+  }
+})
+
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [vue(), pdfWorkerAssetPlugin()],
   server: {
     headers: {
       'Cross-Origin-Opener-Policy': 'same-origin',
