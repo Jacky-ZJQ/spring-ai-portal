@@ -4,7 +4,7 @@ import { useDark } from '@vueuse/core'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
-import pdfWorkerUrl from 'pdfjs-dist/legacy/build/pdf.worker.mjs?url'
+import PdfjsWorker from 'pdfjs-dist/legacy/build/pdf.worker.mjs?worker&inline'
 import { knowledgeAPI } from '../services/api.js'
 
 type ArticleType = 'PROMPT' | 'WORKFLOW' | 'CASE' | 'NOTE'
@@ -181,6 +181,7 @@ const form = reactive<ArticleFormState>(createEmptyForm())
 let feedbackTimer: ReturnType<typeof window.setTimeout> | null = null
 let shareCooldownTimer: ReturnType<typeof window.setTimeout> | null = null
 let pdfjsModulePromise: Promise<typeof import('pdfjs-dist/legacy/build/pdf.mjs')> | null = null
+let pdfWorkerInstance: Worker | null = null
 const likedStorageKey = 'ai-knowledge-liked-articles'
 const likedArticleIds = ref<number[]>([])
 const formSnapshotBaseline = ref('')
@@ -768,8 +769,9 @@ const loadPdfjs = async () => {
   }
 
   const pdfjsLib = await pdfjsModulePromise
-  if (pdfjsLib.GlobalWorkerOptions.workerSrc !== pdfWorkerUrl) {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl
+  if (pdfjsLib.GlobalWorkerOptions.workerPort !== pdfWorkerInstance) {
+    pdfWorkerInstance = new PdfjsWorker()
+    pdfjsLib.GlobalWorkerOptions.workerPort = pdfWorkerInstance
   }
   return pdfjsLib
 }
@@ -1488,6 +1490,10 @@ onBeforeUnmount(() => {
   }
   if (shareCooldownTimer) {
     window.clearTimeout(shareCooldownTimer)
+  }
+  if (pdfWorkerInstance) {
+    pdfWorkerInstance.terminate()
+    pdfWorkerInstance = null
   }
 })
 </script>
