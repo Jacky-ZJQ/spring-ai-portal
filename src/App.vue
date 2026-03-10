@@ -62,6 +62,32 @@ onBeforeUnmount(() => {
         <component :is="Component" />
       </transition>
     </router-view>
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <p class="footer-copy">© 2026 jackylab.online 版权所有</p>
+
+        <div class="footer-records">
+          <a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer">粤ICP备2026021503号</a>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=2026021503"
+            target="_blank"
+            rel="noreferrer"
+            class="police-record"
+          >
+            <img src="/icons/police-badge.svg" alt="" aria-hidden="true" />
+            <span>粤公网安备xxxxxx号</span>
+          </a>
+        </div>
+
+        <div class="footer-links">
+          <a href="mailto:zhangjianqi45@gmail.com">zhangjianqi45@gmail.com</a>
+          <a href="https://github.com/Jacky-ZJQ" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://juejin.cn/user/3468295137136237" target="_blank" rel="noreferrer">掘金</a>
+          <span>微信可联系</span>
+        </div>
+
+      </div>
+    </footer>
   </div>
 </template>
 
@@ -98,6 +124,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding-bottom: 52px;
 }
 
 .navbar {
@@ -225,6 +252,116 @@ body {
   animation: routeLoadingFlow 1s linear infinite;
 }
 
+.site-footer {
+  margin-top: auto;
+  border-top: 1px solid rgba(22, 36, 53, 0.08);
+  background: rgba(255, 255, 255, 0.74);
+  backdrop-filter: blur(12px);
+}
+
+.footer-inner {
+  width: min(1120px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 1rem 0 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  color: #516173;
+  font-size: 0.92rem;
+}
+
+.footer-copy {
+  margin: 0;
+  font-weight: 600;
+  color: #2b3745;
+}
+
+.footer-links,
+.footer-records {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.footer-links a,
+.footer-records a,
+.footer-links span {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover,
+.footer-records a:hover {
+  color: #0b8f5d;
+}
+
+.police-record {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+}
+
+.police-record img {
+  width: 18px;
+  height: 18px;
+}
+
+.dark .site-footer {
+  border-top-color: rgba(255, 255, 255, 0.06);
+  background: rgba(6, 13, 23, 0.78);
+}
+
+.dark .footer-inner {
+  color: #9db0c5;
+}
+
+.dark .footer-copy {
+  color: #e5eef9;
+}
+
+.record-dock {
+  position: fixed;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.34rem 0.72rem;
+  border-radius: 999px;
+  border: 1px solid rgba(12, 40, 65, 0.14);
+  background: rgba(255, 255, 255, 0.93);
+  box-shadow: 0 8px 18px rgba(12, 34, 56, 0.12);
+  backdrop-filter: blur(10px);
+  z-index: 96;
+}
+
+.record-dock a {
+  color: #37485a;
+  text-decoration: none;
+  font-size: 0.78rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.record-dock a:hover {
+  color: #0b8f5d;
+}
+
+.dark .record-dock {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(7, 16, 28, 0.92);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+}
+
+.dark .record-dock a {
+  color: #c9d9ec;
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease;
@@ -284,6 +421,27 @@ body {
       right: 3.2rem;
       top: 0.22rem;
     }
+  }
+
+  .footer-inner {
+    width: min(100%, calc(100% - 1.4rem));
+    padding: 0.9rem 0 1.1rem;
+    align-items: flex-start;
+  }
+
+  .footer-links,
+  .footer-records {
+    gap: 0.55rem 0.85rem;
+  }
+
+  .record-dock {
+    bottom: 8px;
+    width: min(96vw, 620px);
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.7rem;
+    border-radius: 14px;
+    padding: 0.4rem 0.58rem;
   }
 }
 </style>
