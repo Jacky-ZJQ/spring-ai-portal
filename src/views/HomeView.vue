@@ -280,7 +280,7 @@ onBeforeUnmount(() => {
   position: relative;
   min-height: calc(100vh - 78px);
   overflow: hidden;
-  padding: clamp(0.7rem, 2vw, 1.35rem) clamp(1rem, 4vw, 3.5rem) 2.8rem;
+  padding: clamp(0.7rem, 2vw, 1.35rem) clamp(1rem, 4vw, 3.5rem) 1.4rem;
   background: var(--page-bg);
   color: var(--text-main);
   font-family: 'Avenir Next', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;

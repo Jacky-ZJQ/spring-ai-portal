@@ -3,7 +3,7 @@ import { RouterLink, RouterView } from 'vue-router'
 import { useDark, useToggle } from '@vueuse/core'
 import { SunIcon, MoonIcon } from '@heroicons/vue/24/outline'
 import { useRouter } from 'vue-router'
-import { onBeforeUnmount, ref } from 'vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
 
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
@@ -12,6 +12,7 @@ const isRouteLoading = ref(false)
 
 // 添加全局状态来跟踪当前路由
 const currentRoute = ref(router.currentRoute.value.path)
+const isHomeRoute = computed(() => currentRoute.value === '/')
 
 // 添加全局路由守卫
 const removeBeforeEachGuard = router.beforeEach((to, from, next) => {
@@ -41,7 +42,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="app" :class="{ 'dark': isDark }">
+  <div class="app" :class="{ 'dark': isDark, 'has-footer': isHomeRoute }">
     <nav class="navbar">
       <router-link to="/" class="logo">
         <span class="portal-badge">Spring AI Portal</span>
@@ -62,7 +63,7 @@ onBeforeUnmount(() => {
         <component :is="Component" />
       </transition>
     </router-view>
-    <footer class="site-footer">
+    <footer v-if="isHomeRoute" class="site-footer">
       <div class="footer-inner">
         <p class="footer-copy">© 2026 jackylab.online 版权所有</p>
 
@@ -83,7 +84,7 @@ onBeforeUnmount(() => {
           <a href="mailto:zhangjianqi45@gmail.com">zhangjianqi45@gmail.com</a>
           <a href="https://github.com/Jacky-ZJQ" target="_blank" rel="noreferrer">GitHub</a>
           <a href="https://juejin.cn/user/3468295137136237" target="_blank" rel="noreferrer">掘金</a>
-          <span>微信可联系</span>
+<!--          <span>微信可联系</span>-->
         </div>
 
       </div>
@@ -124,7 +125,10 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  padding-bottom: 52px;
+}
+
+.app.has-footer {
+  padding-bottom: 0;
 }
 
 .navbar {
@@ -254,15 +258,15 @@ body {
 
 .site-footer {
   margin-top: auto;
-  border-top: 1px solid rgba(22, 36, 53, 0.08);
-  background: rgba(255, 255, 255, 0.74);
-  backdrop-filter: blur(12px);
+  padding: 0.35rem clamp(1rem, 4vw, 3.5rem) 0.8rem;
+  border-top: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.2));
+  position: relative;
 }
 
 .footer-inner {
-  width: min(1120px, calc(100% - 2rem));
-  margin: 0 auto;
-  padding: 1rem 0 1.2rem;
+  width: 100%;
+  padding: 0.85rem 1.6rem 0.95rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -270,6 +274,29 @@ body {
   flex-wrap: wrap;
   color: #516173;
   font-size: 0.92rem;
+  position: relative;
+  border-radius: 18px;
+  border: 1px solid rgba(22, 36, 53, 0.08);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.48));
+  backdrop-filter: blur(16px);
+  box-shadow: 0 18px 40px rgba(20, 43, 70, 0.16);
+  overflow: hidden;
+}
+
+.footer-inner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 20% 0%, rgba(255, 180, 120, 0.16), transparent 55%),
+    radial-gradient(circle at 85% 10%, rgba(88, 196, 255, 0.18), transparent 52%);
+  opacity: 0.85;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.footer-inner > * {
+  position: relative;
+  z-index: 1;
 }
 
 .footer-copy {
@@ -310,17 +337,23 @@ body {
   height: 18px;
 }
 
-.dark .site-footer {
-  border-top-color: rgba(255, 255, 255, 0.06);
-  background: rgba(6, 13, 23, 0.78);
+.dark .footer-inner {
+  color: #b6c7db;
+  border-color: rgba(220, 236, 255, 0.12);
+  background: linear-gradient(135deg, rgba(9, 17, 29, 0.62), rgba(7, 14, 26, 0.45));
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
 }
 
-.dark .footer-inner {
-  color: #9db0c5;
+.dark .site-footer {
+  background: linear-gradient(180deg, rgba(7, 14, 26, 0), rgba(7, 14, 26, 0.38));
+}
+
+.dark .footer-inner::before {
+  opacity: 0.55;
 }
 
 .dark .footer-copy {
-  color: #e5eef9;
+  color: #e7f0fb;
 }
 
 .record-dock {
@@ -424,14 +457,20 @@ body {
   }
 
   .footer-inner {
-    width: min(100%, calc(100% - 1.4rem));
-    padding: 0.9rem 0 1.1rem;
+    width: 100%;
+    padding: 0.75rem 1rem 0.8rem;
     align-items: flex-start;
+    border-radius: 14px;
+    box-shadow: 0 12px 28px rgba(20, 43, 70, 0.14);
   }
 
   .footer-links,
   .footer-records {
     gap: 0.55rem 0.85rem;
+  }
+
+  .site-footer {
+    padding: 0.3rem 1rem 0.6rem;
   }
 
   .record-dock {
