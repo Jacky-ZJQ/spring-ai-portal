@@ -88,6 +88,9 @@ onBeforeUnmount(() => {
         </div>
 
       </div>
+      <p class="footer-disclaimer">
+        免责声明：本网站为个人技术学习实验平台，所有AI功能均基于第三方API调用，仅用于学习演示，不向公众提供服务。请勿输入违法内容。
+      </p>
     </footer>
   </div>
 </template>
@@ -305,6 +308,16 @@ body {
   color: #2b3745;
 }
 
+.footer-disclaimer {
+  margin: 0.35rem auto 0;
+  max-width: 1120px;
+  padding: 0 0.4rem;
+  color: rgba(81, 97, 115, 0.76);
+  font-size: 0.74rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
 .footer-links,
 .footer-records {
   display: flex;
@@ -354,6 +367,10 @@ body {
 
 .dark .footer-copy {
   color: #e7f0fb;
+}
+
+.dark .footer-disclaimer {
+  color: rgba(182, 199, 219, 0.7);
 }
 
 .record-dock {
